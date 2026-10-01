@@ -227,14 +227,14 @@ export default function ExpensesPage() {
                 <AuthNavbar />
 
                 <main>
-                    <div className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:px-8 lg:py-12">
+                    <div className="mx-auto max-w-7xl px-4 py-8 pb-24 sm:px-6 sm:py-10 sm:pb-10 lg:px-8 lg:py-12">
                         {/* Page header */}
                         <header className="mb-10 max-w-2xl">
                             <p className="text-sm font-medium text-text-secondary">
                                 Expenses
                             </p>
 
-                            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-text-primary sm:text-4xl">
+                            <h1 className="mt-2 text-[2rem] font-semibold leading-[1.08] tracking-[-0.045em] text-text-primary sm:text-4xl">
                                 Keep track of where your money goes.
                             </h1>
 
@@ -246,7 +246,7 @@ export default function ExpensesPage() {
 
                         {/* Summary */}
                         <section className="mb-12 grid overflow-hidden border border-border bg-border sm:grid-cols-2">
-                            <div className="bg-surface px-6 py-7 sm:px-7">
+                            <div className="bg-surface px-5 py-6 sm:px-7 sm:py-7">
                                 {isLoading ? (
                                     <SummarySkeleton />
                                 ) : (
@@ -269,7 +269,7 @@ export default function ExpensesPage() {
                                 )}
                             </div>
 
-                            <div className="bg-surface px-6 py-7 sm:border-l sm:border-border sm:px-7">
+                            <div className="bg-surface px-5 py-6 sm:border-l sm:border-border sm:px-7 sm:py-7">
                                 {isLoading ? (
                                     <SummarySkeleton width="w-16" />
                                 ) : (
@@ -292,7 +292,6 @@ export default function ExpensesPage() {
 
                         {/* Main content */}
                         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
-                            {/* Add expense */}
                             {/* Add expense */}
                             <section className="order-1 h-fit border border-border bg-surface lg:order-2">
                                 <div className="border-b border-border px-6 py-6 sm:px-7">
@@ -317,7 +316,7 @@ export default function ExpensesPage() {
                                     </div>
                                 </div>
 
-                                <form onSubmit={handleSubmit} className="space-y-6 p-6 sm:p-7">
+                                <form onSubmit={handleSubmit} className="space-y-5 p-5 sm:space-y-6 sm:p-7">
                                     {/* Amount */}
                                     <div>
                                         <label
@@ -503,14 +502,14 @@ export default function ExpensesPage() {
                                         {expenses.map((expense, index) => (
                                             <div
                                                 key={expense.id}
-                                                className={`group flex items-center justify-between gap-5 px-4 py-5 transition-colors hover:bg-surface-muted/60 sm:px-5 ${
+                                                className={`group flex items-center justify-between gap-3 px-4 py-4 transition-colors hover:bg-surface-muted/60 sm:gap-5 sm:px-5 sm:py-5 ${
                                                     index > 0
                                                         ? "border-t border-border"
                                                         : ""
                                                 }`}
                                             >
                                                 <div className="flex min-w-0 items-center gap-4">
-                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-surface-muted text-sm font-semibold text-text-secondary">
+                                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-surface-muted text-sm font-semibold text-text-secondary sm:h-10 sm:w-10">
                                                         {getExpenseInitial(
                                                             expense.description
                                                         )}

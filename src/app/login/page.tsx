@@ -73,7 +73,7 @@ function LoginPageContent() {
             localStorage.setItem("refreshToken", data.refreshToken);
             localStorage.setItem("username", username);
 
-            router.push("/expenses");
+            router.push("/dashboard");
         } catch {
             setError(
                 "Something went wrong. Please check your connection and try again."

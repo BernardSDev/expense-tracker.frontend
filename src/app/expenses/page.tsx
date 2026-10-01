@@ -15,6 +15,8 @@ type Expense = {
     userId: string;
 };
 
+
+
 export default function ExpensesPage() {
     const router = useRouter();
 

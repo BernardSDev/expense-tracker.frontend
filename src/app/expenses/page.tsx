@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import {apiRequest, refreshAccessToken} from "@/lib/api";
 
 type Expense = {
     id: number;
@@ -22,15 +23,12 @@ export default function ExpensesPage() {
     ) {
         event.preventDefault();
 
-        const accessToken = localStorage.getItem("accessToken");
-
-        const response = await fetch(
+        const response = await apiRequest(
             "http://localhost:5077/api/Expenses",
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({
                     amount: Number(amount),
@@ -49,18 +47,7 @@ export default function ExpensesPage() {
     }
 
     async function getExpenses() {
-        const accessToken = localStorage.getItem("accessToken");
-
-        console.log("Access Token:", accessToken);
-
-        const response = await fetch(
-            "http://localhost:5077/api/Expenses",
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            }
-        );
+        const response = await apiRequest("http://localhost:5077/api/Expenses");
 
         console.log("Status:", response.status);
         console.log("OK:", response.ok);
@@ -68,30 +55,6 @@ export default function ExpensesPage() {
         const data = await response.json();
 
         setExpenses(data.expenses);
-
-        console.log(data);
-    }
-
-    async function refreshAccessToken() {
-        const refreshToken = localStorage.getItem("refreshToken");
-
-        const response = await fetch(
-            "http://localhost:5077/api/Auth/refresh",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    refreshToken,
-                }),
-            }
-        );
-
-        const data = await response.json();
-
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
 
         console.log(data);
     }
@@ -156,14 +119,6 @@ export default function ExpensesPage() {
                     className="w-full bg-blue-600 text-white p-2"
                 >
                     Get Expenses
-                </button>
-
-                <button
-                    type="button"
-                    onClick={refreshAccessToken}
-                    className="w-full bg-green-600 text-white p-2"
-                >
-                    Refresh Token
                 </button>
             </form>
         </main>

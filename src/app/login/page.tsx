@@ -70,6 +70,7 @@ export default function LoginPage() {
 
             localStorage.setItem("accessToken", data.accessToken);
             localStorage.setItem("refreshToken", data.refreshToken);
+            localStorage.setItem("username", username);
 
             router.push("/expenses");
         } catch {

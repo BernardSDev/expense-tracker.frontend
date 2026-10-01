@@ -60,6 +60,49 @@ function getExpenseInitial(description: string) {
     return description.trim().charAt(0).toUpperCase();
 }
 
+function SummarySkeleton({
+                             width = "w-40",
+                         }: {
+    width?: string;
+}) {
+    return (
+        <div className="animate-pulse">
+            <div className="h-4 w-28 bg-surface-muted" />
+
+            <div className={`mt-4 h-10 ${width} bg-surface-muted`} />
+
+            <div className="mt-3 h-4 w-36 bg-surface-muted" />
+        </div>
+    );
+}
+
+function ExpenseListSkeleton() {
+    return (
+        <div className="overflow-hidden border-y border-border bg-surface">
+            {[1, 2, 3].map((item) => (
+                <div
+                    key={item}
+                    className={`flex items-center justify-between gap-5 px-4 py-5 sm:px-5 ${
+                        item > 1 ? "border-t border-border" : ""
+                    }`}
+                >
+                    <div className="flex min-w-0 items-center gap-4">
+                        <div className="h-10 w-10 shrink-0 animate-pulse bg-surface-muted" />
+
+                        <div className="min-w-0 animate-pulse">
+                            <div className="h-4 w-28 bg-surface-muted" />
+
+                            <div className="mt-2 h-3 w-36 bg-surface-muted" />
+                        </div>
+                    </div>
+
+                    <div className="h-4 w-20 shrink-0 animate-pulse bg-surface-muted" />
+                </div>
+            ))}
+        </div>
+    );
+}
+
 export default function ExpensesPage() {
     const router = useRouter();
 
@@ -204,59 +247,77 @@ export default function ExpensesPage() {
                         {/* Summary */}
                         <section className="mb-12 grid overflow-hidden border border-border bg-border sm:grid-cols-2">
                             <div className="bg-surface px-6 py-7 sm:px-7">
-                                <p className="text-sm font-medium text-text-secondary">
-                                    Total spending
-                                </p>
+                                {isLoading ? (
+                                    <SummarySkeleton />
+                                ) : (
+                                    <>
+                                        <p className="text-sm font-medium text-text-secondary">
+                                            Total spending
+                                        </p>
 
-                                <p className="mt-3 text-3xl font-semibold tracking-[-0.045em] text-text-primary sm:text-4xl">
-                                    {formatAmount(totalExpenses)}
-                                </p>
+                                        <p className="mt-3 text-3xl font-semibold tracking-[-0.045em] text-text-primary sm:text-4xl">
+                                            {formatAmount(totalExpenses)}
+                                        </p>
 
-                                <p className="mt-2 text-sm text-text-muted">
-                                    Across {expenses.length} recorded{" "}
-                                    {expenses.length === 1
-                                        ? "expense"
-                                        : "expenses"}
-                                </p>
+                                        <p className="mt-2 text-sm text-text-muted">
+                                            Across {expenses.length} recorded{" "}
+                                            {expenses.length === 1
+                                                ? "expense"
+                                                : "expenses"}
+                                        </p>
+                                    </>
+                                )}
                             </div>
 
                             <div className="bg-surface px-6 py-7 sm:border-l sm:border-border sm:px-7">
-                                <p className="text-sm font-medium text-text-secondary">
-                                    Expenses recorded
-                                </p>
+                                {isLoading ? (
+                                    <SummarySkeleton width="w-16" />
+                                ) : (
+                                    <>
+                                        <p className="text-sm font-medium text-text-secondary">
+                                            Expenses recorded
+                                        </p>
 
-                                <p className="mt-3 text-3xl font-semibold tracking-[-0.045em] text-text-primary sm:text-4xl">
-                                    {expenses.length}
-                                </p>
+                                        <p className="mt-3 text-3xl font-semibold tracking-[-0.045em] text-text-primary sm:text-4xl">
+                                            {expenses.length}
+                                        </p>
 
-                                <p className="mt-2 text-sm text-text-muted">
-                                    Your spending activity
-                                </p>
+                                        <p className="mt-2 text-sm text-text-muted">
+                                            Your spending activity
+                                        </p>
+                                    </>
+                                )}
                             </div>
                         </section>
 
                         {/* Main content */}
                         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10">
-                            {/* Add expense - appears first on mobile */}
-                            <section className="order-1 h-fit border border-border bg-surface p-6 sm:p-7 lg:order-2">
-                                <div className="mb-7">
-                                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-text-muted">
-                                        New expense
-                                    </p>
+                            {/* Add expense */}
+                            {/* Add expense */}
+                            <section className="order-1 h-fit border border-border bg-surface lg:order-2">
+                                <div className="border-b border-border px-6 py-6 sm:px-7">
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div>
+                                            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">
+                                                New expense
+                                            </p>
 
-                                    <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-text-primary">
-                                        Add expense
-                                    </h2>
+                                            <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-text-primary">
+                                                Add expense
+                                            </h2>
 
-                                    <p className="mt-2 text-sm leading-6 text-text-secondary">
-                                        Record something you spent money on.
-                                    </p>
+                                            <p className="mt-2 max-w-xs text-sm leading-6 text-text-secondary">
+                                                Record something you spent money on.
+                                            </p>
+                                        </div>
+
+                                        <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-accent text-lg font-medium text-text-primary">
+                                            +
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <form
-                                    onSubmit={handleSubmit}
-                                    className="space-y-5"
-                                >
+                                <form onSubmit={handleSubmit} className="space-y-6 p-6 sm:p-7">
                                     {/* Amount */}
                                     <div>
                                         <label
@@ -266,20 +327,26 @@ export default function ExpensesPage() {
                                             Amount
                                         </label>
 
-                                        <input
-                                            id="amount"
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="0.00"
-                                            value={amount}
-                                            onChange={(event) => {
-                                                setAmount(event.target.value);
-                                                setError("");
-                                                setSuccess("");
-                                            }}
-                                            className="h-12 w-full border border-border-strong bg-surface px-4 text-base text-text-primary outline-none transition placeholder:text-text-muted focus:border-text-primary focus:ring-2 focus:ring-accent/40"
-                                        />
+                                        <div className="relative">
+                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-text-secondary">
+                    GH₵
+                </span>
+
+                                            <input
+                                                id="amount"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                placeholder="0.00"
+                                                value={amount}
+                                                onChange={(event) => {
+                                                    setAmount(event.target.value);
+                                                    setError("");
+                                                    setSuccess("");
+                                                }}
+                                                className="h-13 w-full border border-border-strong bg-surface pl-14 pr-4 text-lg font-medium text-text-primary outline-none transition placeholder:text-text-muted focus:border-text-primary focus:ring-2 focus:ring-accent/40"
+                                            />
+                                        </div>
                                     </div>
 
                                     {/* Description */}
@@ -294,16 +361,14 @@ export default function ExpensesPage() {
                                         <input
                                             id="description"
                                             type="text"
-                                            placeholder="e.g. Lunch"
+                                            placeholder="What did you spend on?"
                                             value={description}
                                             onChange={(event) => {
-                                                setDescription(
-                                                    event.target.value
-                                                );
+                                                setDescription(event.target.value);
                                                 setError("");
                                                 setSuccess("");
                                             }}
-                                            className="h-12 w-full border border-border-strong bg-surface px-4 text-base text-text-primary outline-none transition placeholder:text-text-muted focus:border-text-primary focus:ring-2 focus:ring-accent/40"
+                                            className="h-12 w-full border border-border-strong bg-surface px-4 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-text-primary focus:ring-2 focus:ring-accent/40"
                                         />
                                     </div>
 
@@ -326,7 +391,7 @@ export default function ExpensesPage() {
                                                     setError("");
                                                     setSuccess("");
                                                 }}
-                                                className="h-12 w-full border border-border-strong bg-surface px-3 text-base text-text-primary outline-none transition focus:border-text-primary focus:ring-2 focus:ring-accent/40"
+                                                className="h-12 w-full border border-border-strong bg-surface px-3 text-sm text-text-primary outline-none transition focus:border-text-primary focus:ring-2 focus:ring-accent/40"
                                             />
                                         </div>
 
@@ -347,23 +412,27 @@ export default function ExpensesPage() {
                                                     setError("");
                                                     setSuccess("");
                                                 }}
-                                                className="h-12 w-full border border-border-strong bg-surface px-3 text-base text-text-primary outline-none transition focus:border-text-primary focus:ring-2 focus:ring-accent/40"
+                                                className="h-12 w-full border border-border-strong bg-surface px-3 text-sm text-text-primary outline-none transition focus:border-text-primary focus:ring-2 focus:ring-accent/40"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Feedback */}
                                     {error && (
-                                        <div className="border border-red-200 bg-red-50 px-4 py-3">
-                                            <p className="text-sm text-red-700">
+                                        <div className="flex items-start gap-3 border border-red-200 bg-red-50 px-4 py-3">
+                                            <span className="mt-0.5 text-sm text-red-600">!</span>
+
+                                            <p className="text-sm leading-5 text-red-700">
                                                 {error}
                                             </p>
                                         </div>
                                     )}
 
                                     {success && (
-                                        <div className="border border-green-200 bg-green-50 px-4 py-3">
-                                            <p className="text-sm text-green-700">
+                                        <div className="flex items-start gap-3 border border-green-200 bg-green-50 px-4 py-3">
+                                            <span className="mt-0.5 text-sm text-green-600">✓</span>
+
+                                            <p className="text-sm leading-5 text-green-700">
                                                 {success}
                                             </p>
                                         </div>
@@ -373,7 +442,7 @@ export default function ExpensesPage() {
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className={`flex h-12 w-full items-center justify-center text-sm font-semibold text-text-primary transition ${
+                                        className={`flex h-12 w-full items-center justify-center gap-2 text-sm font-semibold text-text-primary transition ${
                                             isSubmitting
                                                 ? "cursor-not-allowed bg-neutral-300"
                                                 : "bg-accent hover:bg-accent-hover"
@@ -381,13 +450,22 @@ export default function ExpensesPage() {
                                     >
                                         {isSubmitting ? (
                                             <>
-                                                <span className="mr-3 h-4 w-4 animate-spin rounded-full border-2 border-text-primary/30 border-t-text-primary" />
+                                                <span className="h-4 w-4 animate-spin rounded-full border-2 border-text-primary/30 border-t-text-primary" />
                                                 Adding expense...
                                             </>
                                         ) : (
-                                            "Add expense"
+                                            <>
+                                                Add expense
+                                                <span aria-hidden="true" className="text-base">
+                        →
+                    </span>
+                                            </>
                                         )}
                                     </button>
+
+                                    <p className="text-center text-xs text-text-muted">
+                                        Your expense will be added to your activity.
+                                    </p>
                                 </form>
                             </section>
 
@@ -408,22 +486,7 @@ export default function ExpensesPage() {
                                 </div>
 
                                 {isLoading ? (
-                                    <div className="border border-border bg-surface">
-                                        <div className="animate-pulse px-5 py-6">
-                                            <div className="h-4 w-32 bg-surface-muted" />
-                                            <div className="mt-3 h-3 w-48 bg-surface-muted" />
-                                        </div>
-
-                                        <div className="border-t border-border animate-pulse px-5 py-6">
-                                            <div className="h-4 w-24 bg-surface-muted" />
-                                            <div className="mt-3 h-3 w-44 bg-surface-muted" />
-                                        </div>
-
-                                        <div className="border-t border-border animate-pulse px-5 py-6">
-                                            <div className="h-4 w-28 bg-surface-muted" />
-                                            <div className="mt-3 h-3 w-40 bg-surface-muted" />
-                                        </div>
-                                    </div>
+                                    <ExpenseListSkeleton />
                                 ) : expenses.length === 0 ? (
                                     <div className="border border-dashed border-border-strong bg-surface px-6 py-12 text-center">
                                         <p className="text-base font-medium text-text-primary">

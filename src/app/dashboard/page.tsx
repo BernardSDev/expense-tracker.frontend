@@ -14,6 +14,50 @@ type Expense = {
     userId: string;
 };
 
+function ExpenseSummarySkeleton() {
+    return (
+        <div className="animate-pulse">
+            <div className="h-4 w-24 bg-surface-muted" />
+
+            <div className="mt-4 h-10 w-44 bg-surface-muted" />
+
+            <div className="mt-3 h-4 w-20 bg-surface-muted" />
+        </div>
+    );
+}
+
+function ExpenseCountSkeleton() {
+    return (
+        <div className="animate-pulse">
+            <div className="h-4 w-20 bg-surface-muted" />
+
+            <div className="mt-4 h-9 w-12 bg-surface-muted" />
+
+            <div className="mt-3 h-4 w-20 bg-surface-muted" />
+        </div>
+    );
+}
+
+function RecentExpensesSkeleton() {
+    return (
+        <div className="divide-y divide-border">
+            {[1, 2, 3].map((item) => (
+                <div
+                    key={item}
+                    className="flex items-center justify-between px-6 py-5"
+                >
+                    <div className="animate-pulse">
+                        <div className="h-4 w-28 bg-surface-muted" />
+                        <div className="mt-2 h-3 w-24 bg-surface-muted" />
+                    </div>
+
+                    <div className="h-4 w-20 animate-pulse bg-surface-muted" />
+                </div>
+            ))}
+        </div>
+    );
+}
+
 export default function DashboardPage() {
     const [username, setUsername] = useState("there");
     const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -31,7 +75,7 @@ export default function DashboardPage() {
         async function loadExpenses() {
             try {
                 const response = await apiRequest(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/Users/Expenses`
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses`
                 );
 
                 if (!response.ok) {
@@ -40,7 +84,7 @@ export default function DashboardPage() {
 
                 const data = await response.json();
 
-                setExpenses(data.expenses);
+                setExpenses(data.expenses ?? []);
             } catch (error) {
                 console.error("Failed to load expenses:", error);
             } finally {
@@ -70,8 +114,10 @@ export default function DashboardPage() {
     return (
         <ProtectedRoute>
             <AuthNavbar />
+
             <main className="min-h-screen bg-background">
                 <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
+                    {/* Header */}
                     <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <div className="flex items-center gap-3">
@@ -100,33 +146,46 @@ export default function DashboardPage() {
                         </Link>
                     </header>
 
+                    {/* Summary */}
                     <section className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <div className="border border-border bg-surface p-6 lg:col-span-2">
-                            <p className="text-sm text-text-secondary">
-                                Total spending
-                            </p>
+                            {isLoadingExpenses ? (
+                                <ExpenseSummarySkeleton />
+                            ) : (
+                                <>
+                                    <p className="text-sm text-text-secondary">
+                                        Total spending
+                                    </p>
 
-                            <p className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-text-primary">
-                                GH₵ {totalSpending.toFixed(2)}
-                            </p>
+                                    <p className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-text-primary">
+                                        GH₵ {totalSpending.toFixed(2)}
+                                    </p>
 
-                            <p className="mt-2 text-sm text-text-muted">
-                                This month
-                            </p>
+                                    <p className="mt-2 text-sm text-text-muted">
+                                        This month
+                                    </p>
+                                </>
+                            )}
                         </div>
 
                         <div className="border border-border bg-surface p-6">
-                            <p className="text-sm text-text-secondary">
-                                Expenses
-                            </p>
+                            {isLoadingExpenses ? (
+                                <ExpenseCountSkeleton />
+                            ) : (
+                                <>
+                                    <p className="text-sm text-text-secondary">
+                                        Expenses
+                                    </p>
 
-                            <p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-text-primary">
-                                {expenseCount}
-                            </p>
+                                    <p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-text-primary">
+                                        {expenseCount}
+                                    </p>
 
-                            <p className="mt-2 text-sm text-text-muted">
-                                This month
-                            </p>
+                                    <p className="mt-2 text-sm text-text-muted">
+                                        This month
+                                    </p>
+                                </>
+                            )}
                         </div>
 
                         <div className="border border-border bg-surface p-6">
@@ -144,7 +203,9 @@ export default function DashboardPage() {
                         </div>
                     </section>
 
+                    {/* Spending + Recent expenses */}
                     <section className="mt-10 grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+                        {/* Spending */}
                         <div>
                             <div className="flex items-end justify-between">
                                 <div>
@@ -159,19 +220,34 @@ export default function DashboardPage() {
                             </div>
 
                             <div className="mt-6 border border-border bg-surface">
-                                <div className="border-b border-border px-6 py-5">
-                                    <p className="text-sm text-text-secondary">
-                                        No spending data yet
-                                    </p>
+                                {isLoadingExpenses ? (
+                                    <div className="animate-pulse px-6 py-7">
+                                        <div className="h-4 w-32 bg-surface-muted" />
 
-                                    <p className="mt-1 text-base text-text-primary">
-                                        Add your first expense to see your
-                                        spending breakdown.
-                                    </p>
-                                </div>
+                                        <div className="mt-3 h-4 w-64 bg-surface-muted" />
+
+                                        <div className="mt-7 space-y-4">
+                                            <div className="h-3 w-full bg-surface-muted" />
+                                            <div className="h-3 w-4/5 bg-surface-muted" />
+                                            <div className="h-3 w-3/5 bg-surface-muted" />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="border-b border-border px-6 py-5">
+                                        <p className="text-sm text-text-secondary">
+                                            No spending data yet
+                                        </p>
+
+                                        <p className="mt-1 text-base text-text-primary">
+                                            Add your first expense to see your
+                                            spending breakdown.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
+                        {/* Recent expenses */}
                         <div>
                             <div className="flex items-end justify-between">
                                 <div>
@@ -192,13 +268,9 @@ export default function DashboardPage() {
                                 </Link>
                             </div>
 
-                            <div className="mt-6 border border-border bg-surface">
+                            <div className="mt-6 overflow-hidden border border-border bg-surface">
                                 {isLoadingExpenses ? (
-                                    <div className="px-6 py-8">
-                                        <p className="text-sm text-text-secondary">
-                                            Loading expenses...
-                                        </p>
-                                    </div>
+                                    <RecentExpensesSkeleton />
                                 ) : recentExpenses.length === 0 ? (
                                     <div className="px-6 py-8">
                                         <p className="text-sm text-text-secondary">
@@ -210,7 +282,7 @@ export default function DashboardPage() {
                                         {recentExpenses.map((expense) => (
                                             <div
                                                 key={expense.id}
-                                                className="flex items-center justify-between px-6 py-5"
+                                                className="flex items-center justify-between px-6 py-5 transition-colors hover:bg-surface-muted/60"
                                             >
                                                 <div>
                                                     <p className="font-medium text-text-primary">

@@ -1,3 +1,10 @@
+export class SessionExpiredError extends Error {
+    constructor() {
+        super("Session expired.");
+        this.name = "SessionExpiredError";
+    }
+}
+
 export async function apiRequest(
     url: string,
     options: RequestInit = {}
@@ -19,7 +26,16 @@ export async function apiRequest(
     });
 
     if (response.status === 401) {
-        await refreshAccessToken();
+        console.log("Access token expired.");
+
+        try {
+            await refreshAccessToken();
+        } catch {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+
+            throw new SessionExpiredError();
+        }
 
         const newAccessToken = localStorage.getItem("accessToken");
 

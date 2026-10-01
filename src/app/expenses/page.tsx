@@ -94,7 +94,7 @@ export default function ExpensesPage() {
 
             try {
                 const response = await apiRequest(
-                    "http://localhost:5077/api/Expenses"
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses`
                 );
 
                 const data = await response.json();
@@ -142,7 +142,7 @@ export default function ExpensesPage() {
 
         try {
             const response = await apiRequest(
-                "http://localhost:5077/api/Expenses",
+                `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses`,
                 {
                     method: "POST",
                     headers: {

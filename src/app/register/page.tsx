@@ -29,7 +29,7 @@ export default function RegisterPage() {
 
         try {
             const response = await fetch(
-                "http://localhost:5077/api/Auth/register",
+                `${process.env.NEXT_PUBLIC_API_URL}/api/Auth/register`,
                 {
                     method: "POST",
                     headers: {

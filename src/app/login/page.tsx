@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 
 type LoginStep = "username" | "password";
 
-export default function LoginPage() {
+function LoginPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -17,6 +17,7 @@ export default function LoginPage() {
     const [step, setStep] = useState<LoginStep>(
         registeredUsername ? "password" : "username"
     );
+
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -45,7 +46,7 @@ export default function LoginPage() {
 
         try {
             const response = await fetch(
-                "http://localhost:5077/api/Auth/login",
+                `${process.env.NEXT_PUBLIC_API_URL}/api/Auth/login`,
                 {
                     method: "POST",
                     headers: {
@@ -109,7 +110,10 @@ export default function LoginPage() {
                         </div>
 
                         {step === "username" && (
-                            <form onSubmit={handleContinue} className="space-y-5">
+                            <form
+                                onSubmit={handleContinue}
+                                className="space-y-5"
+                            >
                                 <div>
                                     <label
                                         htmlFor="username"
@@ -175,7 +179,11 @@ export default function LoginPage() {
                                     <div className="relative">
                                         <input
                                             id="password"
-                                            type={showPassword ? "text" : "password"}
+                                            type={
+                                                showPassword
+                                                    ? "text"
+                                                    : "password"
+                                            }
                                             value={password}
                                             onChange={(event) => {
                                                 setPassword(event.target.value);
@@ -190,7 +198,9 @@ export default function LoginPage() {
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                setShowPassword((current) => !current)
+                                                setShowPassword(
+                                                    (current) => !current
+                                                )
                                             }
                                             aria-label={
                                                 showPassword
@@ -222,29 +232,28 @@ export default function LoginPage() {
                                 <button
                                     type="submit"
                                     disabled={isLoading || !password}
-                                    className={`flex h-14 w-full items-center justify-center text-base font-semibold text-text-primary transition ${
-                                        isLoading
-                                            ? "cursor-not-allowed bg-neutral-300"
-                                            : "bg-accent hover:bg-accent-hover disabled:cursor-not-allowed"
-                                    }`}
+                                    className="h-14 w-full bg-accent text-base font-semibold text-text-primary transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
                                 >
                                     {isLoading ? (
-                                        <>
-                                            <span className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-text-primary/30 border-t-text-primary" />
+                                        <span className="flex items-center justify-center gap-2">
+                                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-400 border-t-neutral-700" />
                                             Signing in...
-                                        </>
+                                        </span>
                                     ) : (
-                                        "Sign in"
+                                        <>
+                                            Sign in{" "}
+                                            <span className="ml-2">→</span>
+                                        </>
                                     )}
                                 </button>
                             </form>
                         )}
 
-                        <p className="mt-10 text-center text-sm text-text-secondary">
+                        <p className="mt-8 text-center text-sm text-text-secondary">
                             Don't have an account?{" "}
                             <Link
                                 href="/register"
-                                className="font-semibold text-text-primary underline decoration-accent decoration-2 underline-offset-4 transition hover:text-text-secondary"
+                                className="font-medium text-text-primary underline underline-offset-4"
                             >
                                 Create one
                             </Link>
@@ -253,5 +262,13 @@ export default function LoginPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={null}>
+            <LoginPageContent />
+        </Suspense>
     );
 }

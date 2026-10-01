@@ -75,7 +75,7 @@ export async function refreshAccessToken() {
     const refreshToken = localStorage.getItem("refreshToken");
 
     const response = await fetch(
-        "http://localhost:5077/api/Auth/refresh",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Auth/refresh`,
         {
             method: "POST",
             headers: {

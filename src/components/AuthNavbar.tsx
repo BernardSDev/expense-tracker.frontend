@@ -4,6 +4,58 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+function HomeIcon({ active }: { active: boolean }) {
+    return (
+        <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className={`h-5 w-5 ${
+                active ? "text-text-primary" : "text-text-secondary"
+            }`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.5 10.5 12 3l8.5 7.5"
+            />
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5.5 9.5V20h13V9.5M9.5 20v-6h5v6"
+            />
+        </svg>
+    );
+}
+
+function ExpensesIcon({ active }: { active: boolean }) {
+    return (
+        <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className={`h-5 w-5 ${
+                active ? "text-text-primary" : "text-text-secondary"
+            }`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 3.5h9l3 3V20.5H6z"
+            />
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M14.5 3.5v4h3.5M9 11h6M9 14.5h6M9 18h3"
+            />
+        </svg>
+    );
+}
+
 export default function AuthNavbar() {
     const router = useRouter();
     const pathname = usePathname();
@@ -83,35 +135,51 @@ export default function AuthNavbar() {
 
             {/* Mobile bottom navigation */}
             <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface/95 backdrop-blur sm:hidden">
-                <div className="grid h-16 grid-cols-3">
+                <div className="grid min-h-16 grid-cols-3 pb-[env(safe-area-inset-bottom)]">
                     <Link
                         href="/dashboard"
-                        className={`flex flex-col items-center justify-center gap-1 text-xs transition ${
+                        className={`relative flex min-h-16 flex-col items-center justify-center gap-1 text-xs transition ${
                             isOverview
                                 ? "font-semibold text-text-primary"
                                 : "text-text-secondary"
                         }`}
                     >
-                        <span className="text-base leading-none">⌂</span>
+                        {isOverview && (
+                            <span
+                                aria-hidden="true"
+                                className="absolute top-0 h-0.5 w-8 bg-accent"
+                            />
+                        )}
+
+                        <HomeIcon active={isOverview} />
+
                         <span>Overview</span>
                     </Link>
 
                     <Link
                         href="/expenses"
-                        className={`flex flex-col items-center justify-center gap-1 text-xs transition ${
+                        className={`relative flex min-h-16 flex-col items-center justify-center gap-1 text-xs transition ${
                             isExpenses
                                 ? "font-semibold text-text-primary"
                                 : "text-text-secondary"
                         }`}
                     >
-                        <span className="text-base leading-none">≡</span>
+                        {isExpenses && (
+                            <span
+                                aria-hidden="true"
+                                className="absolute top-0 h-0.5 w-8 bg-accent"
+                            />
+                        )}
+
+                        <ExpensesIcon active={isExpenses} />
+
                         <span>Expenses</span>
                     </Link>
 
                     <button
                         type="button"
                         onClick={handleSignOut}
-                        className="flex flex-col items-center justify-center gap-1 text-xs text-text-secondary transition"
+                        className="flex min-h-16 flex-col items-center justify-center gap-1 text-xs text-text-secondary transition"
                     >
                         <span className="flex h-5 w-5 items-center justify-center bg-surface-muted text-[10px] font-semibold text-text-primary">
                             {username

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function HomeIcon({ active }: { active: boolean }) {
     return (
@@ -56,11 +56,79 @@ function ExpensesIcon({ active }: { active: boolean }) {
     );
 }
 
+function ChevronIcon({ open }: { open: boolean }) {
+    return (
+        <svg
+            aria-hidden="true"
+            viewBox="0 0 20 20"
+            className={`h-4 w-4 text-text-secondary transition-transform ${
+                open ? "rotate-180" : ""
+            }`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m5 7.5 5 5 5-5"
+            />
+        </svg>
+    );
+}
+
+function LogoutIcon() {
+    return (
+        <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10 5H6.5A1.5 1.5 0 0 0 5 6.5v11A1.5 1.5 0 0 0 6.5 19H10"
+            />
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M14 8l4 4-4 4M18 12H9"
+            />
+        </svg>
+    );
+}
+
+function UserIcon() {
+    return (
+        <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+        >
+            <circle cx="12" cy="8" r="3.25" />
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5.5 19.5c.8-3.1 3.1-4.75 6.5-4.75s5.7 1.65 6.5 4.75"
+            />
+        </svg>
+    );
+}
+
 export default function AuthNavbar() {
     const router = useRouter();
     const pathname = usePathname();
 
     const [username, setUsername] = useState("");
+    const [accountOpen, setAccountOpen] = useState(false);
+
+    const accountRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const storedUsername = localStorage.getItem("username");
@@ -68,6 +136,31 @@ export default function AuthNavbar() {
         if (storedUsername) {
             setUsername(storedUsername);
         }
+    }, []);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (
+                accountRef.current &&
+                !accountRef.current.contains(event.target as Node)
+            ) {
+                setAccountOpen(false);
+            }
+        }
+
+        function handleEscape(event: KeyboardEvent) {
+            if (event.key === "Escape") {
+                setAccountOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleEscape);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("keydown", handleEscape);
+        };
     }, []);
 
     function handleSignOut() {
@@ -80,6 +173,10 @@ export default function AuthNavbar() {
 
     const isOverview = pathname === "/dashboard";
     const isExpenses = pathname === "/expenses";
+
+    const avatarLetter = username
+        ? username.charAt(0).toUpperCase()
+        : "U";
 
     return (
         <>
@@ -118,17 +215,56 @@ export default function AuthNavbar() {
 
                         <div className="ml-2 h-5 w-px bg-border" />
 
-                        <span className="text-sm font-medium text-text-primary">
-                            {username}
-                        </span>
+                        {/* Desktop account menu */}
+                        <div ref={accountRef} className="relative">
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setAccountOpen((current) => !current)
+                                }
+                                aria-expanded={accountOpen}
+                                aria-haspopup="menu"
+                                className="flex items-center gap-2 rounded-md py-1.5 pl-1 pr-1.5 transition hover:bg-surface-muted"
+                            >
+                                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-muted text-xs font-semibold text-text-primary">
+                                    {avatarLetter}
+                                </span>
 
-                        <button
-                            type="button"
-                            onClick={handleSignOut}
-                            className="text-sm text-text-secondary transition hover:text-text-primary"
-                        >
-                            Logout
-                        </button>
+                                <span className="max-w-32 truncate text-sm font-medium text-text-primary">
+                                    {username || "Account"}
+                                </span>
+
+                                <ChevronIcon open={accountOpen} />
+                            </button>
+
+                            {accountOpen && (
+                                <div
+                                    role="menu"
+                                    className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-surface shadow-sm"
+                                >
+                                    <div className="border-b border-border px-4 py-3">
+                                        <p className="truncate text-sm font-medium text-text-primary">
+                                            {username || "Account"}
+                                        </p>
+                                        <p className="mt-0.5 text-xs text-text-secondary">
+                                            Personal account
+                                        </p>
+                                    </div>
+
+                                    <div className="p-1.5">
+                                        <button
+                                            type="button"
+                                            onClick={handleSignOut}
+                                            role="menuitem"
+                                            className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-text-secondary transition hover:bg-surface-muted hover:text-text-primary"
+                                        >
+                                            <LogoutIcon />
+                                            <span>Logout</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -176,19 +312,56 @@ export default function AuthNavbar() {
                         <span>Expenses</span>
                     </Link>
 
-                    <button
-                        type="button"
-                        onClick={handleSignOut}
-                        className="flex min-h-16 flex-col items-center justify-center gap-1 text-xs text-text-secondary transition"
-                    >
-                        <span className="flex h-5 w-5 items-center justify-center bg-surface-muted text-[10px] font-semibold text-text-primary">
-                            {username
-                                ? username.charAt(0).toUpperCase()
-                                : "U"}
-                        </span>
+                    {/* Mobile account menu */}
+                    <div ref={accountRef} className="relative">
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setAccountOpen((current) => !current)
+                            }
+                            aria-expanded={accountOpen}
+                            aria-haspopup="menu"
+                            className={`flex min-h-16 w-full flex-col items-center justify-center gap-1 text-xs transition ${
+                                accountOpen
+                                    ? "font-semibold text-text-primary"
+                                    : "text-text-secondary"
+                            }`}
+                        >
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-muted text-[10px] font-semibold text-text-primary">
+                                {avatarLetter}
+                            </span>
 
-                        <span>Logout</span>
-                    </button>
+                            <span>Account</span>
+                        </button>
+
+                        {accountOpen && (
+                            <div
+                                role="menu"
+                                className="absolute bottom-[calc(100%+0.5rem)] right-3 z-50 w-52 overflow-hidden rounded-lg border border-border bg-surface shadow-sm"
+                            >
+                                <div className="border-b border-border px-4 py-3">
+                                    <p className="truncate text-sm font-medium text-text-primary">
+                                        {username || "Account"}
+                                    </p>
+                                    <p className="mt-0.5 text-xs text-text-secondary">
+                                        Personal account
+                                    </p>
+                                </div>
+
+                                <div className="p-1.5">
+                                    <button
+                                        type="button"
+                                        onClick={handleSignOut}
+                                        role="menuitem"
+                                        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-text-secondary transition hover:bg-surface-muted hover:text-text-primary"
+                                    >
+                                        <LogoutIcon />
+                                        <span>Logout</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
         </>

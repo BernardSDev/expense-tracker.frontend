@@ -152,6 +152,12 @@ export default function ExpensesPage() {
     const [editTime, setEditTime] = useState("");
     const [editError, setEditError] = useState("");
 
+    // Delete expense state
+    const [deletingExpense, setDeletingExpense] =
+        useState<Expense | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState("");
+
     // Expense action menu
     const [openExpenseMenuId, setOpenExpenseMenuId] =
         useState<number | null>(null);
@@ -305,6 +311,27 @@ export default function ExpensesPage() {
     }
 
     /*
+     * Start deleting an expense.
+     */
+    function startDeleting(expense: Expense) {
+        setDeletingExpense(expense);
+        setDeleteError("");
+        setOpenExpenseMenuId(null);
+    }
+
+    /*
+     * Close delete modal.
+     */
+    function closeDeleteModal() {
+        if (isDeleting) {
+            return;
+        }
+
+        setDeletingExpense(null);
+        setDeleteError("");
+    }
+
+    /*
      * Close edit modal with Escape.
      */
     useEffect(() => {
@@ -330,6 +357,33 @@ export default function ExpensesPage() {
             );
         };
     }, [editingExpense, isUpdating]);
+
+    /*
+     * Close delete modal with Escape.
+     */
+    useEffect(() => {
+        if (!deletingExpense) {
+            return;
+        }
+
+        function handleEscape(event: KeyboardEvent) {
+            if (event.key === "Escape" && !isDeleting) {
+                closeDeleteModal();
+            }
+        }
+
+        document.addEventListener(
+            "keydown",
+            handleEscape
+        );
+
+        return () => {
+            document.removeEventListener(
+                "keydown",
+                handleEscape
+            );
+        };
+    }, [deletingExpense, isDeleting]);
 
     /*
      * Update expense.
@@ -421,6 +475,48 @@ export default function ExpensesPage() {
     }
 
     /*
+     * Delete expense.
+     */
+    async function handleDeleteExpense() {
+        if (!deletingExpense) {
+            return;
+        }
+
+        setIsDeleting(true);
+        setDeleteError("");
+
+        try {
+            await apiRequest(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses/${deletingExpense.id}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            setExpenses((currentExpenses) =>
+                currentExpenses.filter(
+                    (expense) =>
+                        expense.id !== deletingExpense.id
+                )
+            );
+
+            setDeletingExpense(null);
+            setSuccess("Expense deleted successfully.");
+        } catch (error) {
+            if (error instanceof SessionExpiredError) {
+                router.push("/login");
+                return;
+            }
+
+            setDeleteError(
+                "Unable to delete the expense. Please try again."
+            );
+        } finally {
+            setIsDeleting(false);
+        }
+    }
+
+    /*
      * Add expense.
      */
     async function handleSubmit(
@@ -508,7 +604,7 @@ export default function ExpensesPage() {
                 <AuthNavbar />
 
                 <main>
-                    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+                    <div className="mx-auto max-w-7xl px-4 py-8 pb-28 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
 
                         {/* Page header */}
                         <header className="mb-10 max-w-2xl">
@@ -920,6 +1016,18 @@ export default function ExpensesPage() {
                                                                     >
                                                                         Edit expense
                                                                     </button>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() =>
+                                                                            startDeleting(
+                                                                                expense
+                                                                            )
+                                                                        }
+                                                                        className="w-full px-4 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-red-50"
+                                                                    >
+                                                                        Delete expense
+                                                                    </button>
                                                                 </div>
                                                             )}
                                                     </div>
@@ -1159,6 +1267,125 @@ export default function ExpensesPage() {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Delete expense modal */}
+                {deletingExpense && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 sm:p-6"
+                        role="presentation"
+                        onMouseDown={(event) => {
+                            if (
+                                event.target ===
+                                event.currentTarget
+                            ) {
+                                closeDeleteModal();
+                            }
+                        }}
+                    >
+                        <div
+                            role="alertdialog"
+                            aria-modal="true"
+                            aria-labelledby="delete-expense-title"
+                            aria-describedby="delete-expense-description"
+                            className="w-full max-w-lg border border-border bg-surface shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
+                        >
+                            {/* Modal header */}
+                            <div className="flex items-start justify-between gap-6 border-b border-border px-6 py-5 sm:px-7">
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">
+                                        Delete expense
+                                    </p>
+
+                                    <h2
+                                        id="delete-expense-title"
+                                        className="mt-2 text-xl font-semibold tracking-[-0.03em] text-text-primary"
+                                    >
+                                        Delete this expense?
+                                    </h2>
+
+                                    <p
+                                        id="delete-expense-description"
+                                        className="mt-2 text-sm leading-6 text-text-secondary"
+                                    >
+                                        This action cannot be undone.
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={closeDeleteModal}
+                                    disabled={isDeleting}
+                                    aria-label="Close delete expense"
+                                    className="flex h-9 w-9 shrink-0 items-center justify-center text-xl text-text-muted transition-colors hover:bg-surface-muted hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    ×
+                                </button>
+                            </div>
+
+                            {/* Confirmation content */}
+                            <div className="p-6 sm:p-7">
+                                <p className="text-sm leading-6 text-text-secondary">
+                                    Are you sure you want to delete{" "}
+                                    <span className="font-medium text-text-primary">
+                                        {deletingExpense.description ||
+                                            "Untitled expense"}
+                                    </span>{" "}
+                                    for{" "}
+                                    <span className="font-medium text-text-primary">
+                                        {formatAmount(
+                                            deletingExpense.amount
+                                        )}
+                                    </span>
+                                    ?
+                                </p>
+
+                                {deleteError && (
+                                    <div className="mt-5 flex items-start gap-3 border border-red-200 bg-red-50 px-4 py-3">
+                                        <span className="mt-0.5 text-sm text-red-600">
+                                            !
+                                        </span>
+
+                                        <p className="text-sm leading-5 text-red-700">
+                                            {deleteError}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Modal actions */}
+                            <div className="grid grid-cols-2 gap-3 border-t border-border px-6 py-5 sm:px-7">
+                                <button
+                                    type="button"
+                                    onClick={closeDeleteModal}
+                                    disabled={isDeleting}
+                                    className="h-12 border border-border bg-surface text-sm font-medium text-text-secondary transition-colors hover:bg-surface-muted hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={handleDeleteExpense}
+                                    disabled={isDeleting}
+                                    className={`flex h-12 items-center justify-center gap-2 text-sm font-semibold text-white transition ${
+                                        isDeleting
+                                            ? "cursor-not-allowed bg-red-300"
+                                            : "bg-red-600 hover:bg-red-700"
+                                    }`}
+                                >
+                                    {isDeleting ? (
+                                        <>
+                                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        "Delete expense"
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

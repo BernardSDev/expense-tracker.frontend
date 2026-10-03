@@ -44,7 +44,7 @@ function RecentExpensesSkeleton() {
             {[1, 2, 3].map((item) => (
                 <div
                     key={item}
-                    className="flex items-center justify-between px-6 py-5"
+                    className="flex items-center justify-between gap-4 px-4 py-4 sm:px-6 sm:py-5"
                 >
                     <div className="animate-pulse">
                         <div className="h-4 w-28 bg-surface-muted" />
@@ -116,7 +116,7 @@ export default function DashboardPage() {
             <AuthNavbar />
 
             <main className="min-h-screen bg-background">
-                <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
+                <div className="mx-auto max-w-7xl px-6 pb-28 pt-8 sm:pb-8 lg:px-8">
                     {/* Header */}
                     <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                         <div>
@@ -219,7 +219,7 @@ export default function DashboardPage() {
                                 </div>
                             </div>
 
-                            <div className="mt-6 border border-border bg-surface">
+                            <div className="mt-6 overflow-hidden border border-border bg-surface">
                                 {isLoadingExpenses ? (
                                     <div className="animate-pulse px-6 py-7">
                                         <div className="h-4 w-32 bg-surface-muted" />
@@ -262,13 +262,13 @@ export default function DashboardPage() {
 
                                 <Link
                                     href="/expenses"
-                                    className="text-sm font-medium text-text-secondary underline underline-offset-4 transition hover:text-text-primary"
+                                    className="px-2 py-2 text-sm font-medium text-text-secondary underline underline-offset-4 transition hover:text-text-primary"
                                 >
                                     View all
                                 </Link>
                             </div>
 
-                            <div className="mt-6 overflow-hidden border border-border bg-surface">
+                            <div className="mt-6 overflow-hidden rounded-sm border border-border bg-surface">
                                 {isLoadingExpenses ? (
                                     <RecentExpensesSkeleton />
                                 ) : recentExpenses.length === 0 ? (
@@ -282,21 +282,28 @@ export default function DashboardPage() {
                                         {recentExpenses.map((expense) => (
                                             <div
                                                 key={expense.id}
-                                                className="flex items-center justify-between px-6 py-5 transition-colors hover:bg-surface-muted/60"
+                                                className="flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-surface-muted/60 sm:px-6 sm:py-5"
                                             >
-                                                <div>
-                                                    <p className="font-medium text-text-primary">
+                                                <div className="min-w-0">
+                                                    <p className="truncate font-medium text-text-primary">
                                                         {expense.description}
                                                     </p>
 
                                                     <p className="mt-1 text-sm text-text-secondary">
                                                         {new Date(
                                                             expense.date
-                                                        ).toLocaleDateString()}
+                                                        ).toLocaleDateString(
+                                                            "en-GB",
+                                                            {
+                                                                day: "2-digit",
+                                                                month: "short",
+                                                                year: "numeric",
+                                                            }
+                                                        )}
                                                     </p>
                                                 </div>
 
-                                                <p className="font-semibold text-text-primary">
+                                                <p className="shrink-0 text-sm font-semibold text-text-primary sm:text-base">
                                                     GH₵{" "}
                                                     {expense.amount.toFixed(2)}
                                                 </p>

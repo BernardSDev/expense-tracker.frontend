@@ -173,6 +173,9 @@ export default function ExpensesPage() {
         );
     }, [expenses]);
 
+    const EXPENSES_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses`;
+
+
     /*
      * Load expenses
      */
@@ -182,9 +185,7 @@ export default function ExpensesPage() {
             setError("");
 
             try {
-                const response = await apiRequest(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses`
-                );
+                const response = await apiRequest(EXPENSES_API_URL);
 
                 const data = await response.json();
 
@@ -421,7 +422,7 @@ export default function ExpensesPage() {
 
         try {
             const response = await apiRequest(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses/${editingExpense.id}`,
+                `${EXPENSES_API_URL}/${editingExpense.id}   `,
                 {
                     method: "PUT",
                     headers: {
@@ -487,7 +488,7 @@ export default function ExpensesPage() {
 
         try {
             await apiRequest(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses/${deletingExpense.id}`,
+                `${EXPENSES_API_URL}/${deletingExpense.id}`,
                 {
                     method: "DELETE",
                 }
@@ -550,8 +551,7 @@ export default function ExpensesPage() {
         setSuccess("");
 
         try {
-            const response = await apiRequest(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses`,
+            const response = await apiRequest(EXPENSES_API_URL,
                 {
                     method: "POST",
                     headers: {

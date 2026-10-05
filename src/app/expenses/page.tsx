@@ -124,6 +124,8 @@ function ExpenseListSkeleton() {
     );
 }
 
+const EXPENSES_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses`;
+
 export default function ExpensesPage() {
     const router = useRouter();
 
@@ -172,9 +174,6 @@ export default function ExpensesPage() {
             0
         );
     }, [expenses]);
-
-    const EXPENSES_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses`;
-
 
     /*
      * Load expenses
@@ -422,7 +421,7 @@ export default function ExpensesPage() {
 
         try {
             const response = await apiRequest(
-                `${EXPENSES_API_URL}/${editingExpense.id}   `,
+                `${EXPENSES_API_URL}/${editingExpense.id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -1393,3 +1392,4 @@ export default function ExpensesPage() {
         </ProtectedRoute>
     );
 }
+

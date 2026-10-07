@@ -201,6 +201,11 @@ function ExpenseList({
 
     const groups = useMemo(() => groupByDay(filtered), [filtered]);
 
+    const menuExpense =
+        openMenuId === null
+            ? null
+            : expenses.find((expense) => expense.id === openMenuId) ?? null;
+
     const filteredTotal = filtered.reduce(
         (total, expense) => total + expense.amount,
         0
@@ -416,7 +421,7 @@ function ExpenseList({
                                                 <button
                                                     type="button"
                                                     aria-label={`Actions for ${expense.description}`}
-                                                    aria-haspopup="menu"
+                                                    aria-haspopup="dialog"
                                                     aria-expanded={isMenuOpen}
                                                     onClick={() =>
                                                         setOpenMenuId(
@@ -437,36 +442,6 @@ function ExpenseList({
                                                     </svg>
                                                 </button>
 
-                                                {isMenuOpen && (
-                                                    <div
-                                                        role="menu"
-                                                        className="absolute right-0 top-11 z-30 w-40 overflow-hidden rounded-xl border border-border bg-surface shadow-float"
-                                                    >
-                                                        <button
-                                                            type="button"
-                                                            role="menuitem"
-                                                            onClick={() => {
-                                                                setOpenMenuId(null);
-                                                                onEdit(expense);
-                                                            }}
-                                                            className="block w-full px-4 py-3 text-left text-sm font-medium text-text-primary transition-colors hover:bg-surface-muted"
-                                                        >
-                                                            Edit expense
-                                                        </button>
-
-                                                        <button
-                                                            type="button"
-                                                            role="menuitem"
-                                                            onClick={() => {
-                                                                setOpenMenuId(null);
-                                                                onDelete(expense);
-                                                            }}
-                                                            className="block w-full border-t border-border px-4 py-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-surface-muted"
-                                                        >
-                                                            Delete expense
-                                                        </button>
-                                                    </div>
-                                                )}
                                             </div>
                                         </li>
                                     );
@@ -475,6 +450,109 @@ function ExpenseList({
                         </section>
                     ))}
             </div>
+
+            {/* Mobile: action sheet for the selected expense */}
+            {menuExpense && (
+                <div
+                    className="fixed inset-0 z-[60] flex items-end bg-dark/40 backdrop-blur-[2px] md:hidden"
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) {
+                            setOpenMenuId(null);
+                        }
+                    }}
+                >
+                    <div
+                        data-expense-menu
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={`Actions for ${menuExpense.description}`}
+                        className="w-full rounded-t-[20px] bg-surface px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-2 shadow-float"
+                    >
+                        <div
+                            aria-hidden="true"
+                            className="mx-auto mb-3 h-1 w-10 rounded-full bg-border-strong"
+                        />
+
+                        <div className="flex items-center gap-3 px-1 pb-4">
+                            <CategoryIcon expense={menuExpense} />
+
+                            <div className="min-w-0 flex-1">
+                                <p className="truncate text-[15px] font-semibold text-text-primary">
+                                    {menuExpense.description}
+                                </p>
+
+                                <p className="truncate text-[13px] text-text-secondary">
+                                    {formatDate(menuExpense.date)}
+                                    {" · "}
+                                    {formatTime(menuExpense.date)}
+                                </p>
+                            </div>
+
+                            <p className="tabular shrink-0 text-[15px] font-semibold text-text-primary">
+                                −{formatAmount(menuExpense.amount)}
+                            </p>
+                        </div>
+
+                        <div className="overflow-hidden rounded-2xl border border-border">
+                            <button
+                                type="button"
+                                autoFocus
+                                onClick={() => {
+                                    setOpenMenuId(null);
+                                    onEdit(menuExpense);
+                                }}
+                                className="flex h-[52px] w-full items-center gap-3 px-4 text-left text-[15px] font-medium text-text-primary transition-colors hover:bg-surface-muted"
+                            >
+                                <svg
+                                    aria-hidden="true"
+                                    viewBox="0 0 24 24"
+                                    className="h-5 w-5 text-text-secondary"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="1.8"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z" />
+                                    <path d="M13.5 6.5l3 3" />
+                                </svg>
+                                Edit expense
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setOpenMenuId(null);
+                                    onDelete(menuExpense);
+                                }}
+                                className="flex h-[52px] w-full items-center gap-3 border-t border-border px-4 text-left text-[15px] font-medium text-red-600 transition-colors hover:bg-red-50"
+                            >
+                                <svg
+                                    aria-hidden="true"
+                                    viewBox="0 0 24 24"
+                                    className="h-5 w-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="1.8"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+                                </svg>
+                                Delete expense
+                            </button>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => setOpenMenuId(null)}
+                            className="mt-2.5 h-[52px] w-full rounded-2xl bg-surface-muted text-[15px] font-semibold text-text-primary transition-colors hover:bg-border"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Desktop: table card with toolbar */}
             <div className="hidden overflow-hidden rounded-2xl border border-border bg-surface md:block">

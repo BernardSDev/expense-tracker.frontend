@@ -73,7 +73,7 @@ export default function ExpensesPage() {
                 <AuthNavbar />
 
                 <main>
-                    <div className="mx-auto max-w-[1040px] px-4 pb-28 pt-5 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8">
+                    <div className="mx-auto max-w-[1040px] px-4 pb-44 pt-5 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8">
                         <ExpenseHeader onAddExpense={handleAddExpense} />
 
                         <ExpenseSummary

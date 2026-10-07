@@ -26,17 +26,14 @@ export default function ExpensesPage() {
         refetch,
     } = useExpensesQuery();
 
+    const [isAddOpen, setIsAddOpen] = useState(false);
     const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
     const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
 
     const deleteExpenseMutation = useDeleteExpenseMutation();
 
     function handleAddExpense() {
-        document
-            .getElementById("add-expense")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-
-        document.getElementById("amount")?.focus({ preventScroll: true });
+        setIsAddOpen(true);
     }
 
     function handleEdit(expense: Expense) {
@@ -94,9 +91,17 @@ export default function ExpensesPage() {
                             onDelete={handleDelete}
                         />
 
-                        <div className="mt-8">
-                            <AddExpenseForm />
-                        </div>
+                        <Modal
+                            isOpen={isAddOpen}
+                            title="Add expense"
+                            description="Record a new expense and keep your spending organized."
+                            onClose={() => setIsAddOpen(false)}
+                        >
+                            <AddExpenseForm
+                                onCancel={() => setIsAddOpen(false)}
+                                onSuccess={() => setIsAddOpen(false)}
+                            />
+                        </Modal>
 
                         {/* Mobile floating add button, sits above the bottom nav */}
                         <button
@@ -160,8 +165,8 @@ export default function ExpensesPage() {
                                     <Button
                                         type="button"
                                         onClick={() => setExpenseToDelete(null)}
+                                        variant="secondary"
                                         disabled={deleteExpenseMutation.isPending}
-                                        className="bg-surface text-text-primary hover:bg-surface-muted"
                                     >
                                         Cancel
                                     </Button>
@@ -169,8 +174,8 @@ export default function ExpensesPage() {
                                     <Button
                                         type="button"
                                         onClick={confirmDelete}
+                                        variant="danger"
                                         disabled={deleteExpenseMutation.isPending}
-                                        className="bg-red-600 text-white hover:bg-red-700"
                                     >
                                         {deleteExpenseMutation.isPending
                                             ? "Deleting..."

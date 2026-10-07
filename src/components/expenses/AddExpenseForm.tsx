@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
@@ -16,8 +16,17 @@ import Select from "@/components/ui/Select";
 
 import { useCreateExpenseMutation } from "@/mutations/expenses";
 import { useCategoriesQuery } from "@/queries/categories";
+import { getCurrentDate, getCurrentTime } from "@/utils/expenses";
 
-export default function AddExpenseForm() {
+type AddExpenseFormProps = {
+    onCancel: () => void;
+    onSuccess?: () => void;
+};
+
+export default function AddExpenseForm({
+                                           onCancel,
+                                           onSuccess,
+                                       }: AddExpenseFormProps) {
     const {
         data: categories = [],
         isLoading: isCategoriesLoading,
@@ -32,7 +41,7 @@ export default function AddExpenseForm() {
         defaultValues: {
             amount: undefined,
             description: "",
-            date: "",
+            date: `${getCurrentDate()}T${getCurrentTime()}`,
             categoryId: "",
         },
     });
@@ -56,6 +65,7 @@ export default function AddExpenseForm() {
                     );
 
                     form.reset();
+                    onSuccess?.();
                 },
                 onError: () => {
                     toast.error(
@@ -66,89 +76,85 @@ export default function AddExpenseForm() {
         );
     }
 
+    const errors = form.formState.errors;
+    const description = useWatch({ control: form.control, name: "description" });
+    const descriptionLength = description?.length ?? 0;
+    const isPending = createExpenseMutation.isPending;
+
     return (
-        <section
-            id="add-expense"
-            className="scroll-mt-6 overflow-hidden rounded-2xl border border-border bg-surface"
+        <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            noValidate
+            className="space-y-5"
         >
-            <div className="border-b border-border px-4 py-5 sm:px-6">
-                <h2 className="text-base font-semibold text-text-primary">
-                    Add expense
-                </h2>
-
-                <p className="mt-1 text-sm leading-6 text-text-secondary">
-                    Record a new expense and keep your spending
-                    organized.
-                </p>
-            </div>
-
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-5 px-4 py-5 sm:space-y-6 sm:px-6 sm:py-6"
+            <FormField
+                label="Amount"
+                htmlFor="amount"
+                error={errors.amount?.message}
             >
-                <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
-                    <FormField
-                        label="Amount"
-                        htmlFor="amount"
-                        error={
-                            form.formState.errors.amount
-                                ?.message
-                        }
-                    >
-                        <div className="flex border border-border bg-surface focus-within:border-border-strong">
-                            <span className="flex shrink-0 items-center border-r border-border px-3 text-sm text-text-secondary">
-                                GH₵
-                            </span>
+                <div className="relative">
+                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-lg font-medium text-text-secondary">
+                        GH₵
+                    </span>
 
-                            <Input
-                                id="amount"
-                                type="number"
-                                min="0.01"
-                                step="0.01"
-                                placeholder="0.00"
-                                {...form.register("amount")}
-                                className="min-w-0 border-0 focus:border-0"
-                            />
-                        </div>
-                    </FormField>
-
-                    <FormField
-                        label="Date"
-                        htmlFor="date"
-                        error={
-                            form.formState.errors.date
-                                ?.message
-                        }
-                    >
-                        <Input
-                            id="date"
-                            type="datetime-local"
-                            {...form.register("date")}
-                        />
-                    </FormField>
+                    <Input
+                        id="amount"
+                        type="number"
+                        inputMode="decimal"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="0.00"
+                        autoFocus
+                        aria-invalid={!!errors.amount}
+                        aria-describedby={errors.amount ? "amount-message" : undefined}
+                        {...form.register("amount")}
+                        className="tabular h-14 pl-[3.75rem] text-2xl font-semibold tracking-[-0.02em] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    />
                 </div>
+            </FormField>
 
+            <FormField
+                label="Description"
+                htmlFor="description"
+                error={errors.description?.message}
+                hint={`${descriptionLength}/250`}
+            >
+                <Input
+                    id="description"
+                    type="text"
+                    maxLength={250}
+                    placeholder="e.g. Lunch at work"
+                    autoComplete="off"
+                    aria-invalid={!!errors.description}
+                    aria-describedby={errors.description ? "description-message" : undefined}
+                    {...form.register("description")}
+                />
+            </FormField>
+
+            <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
                 <FormField
-                    label="Description"
-                    htmlFor="description"
-                    error={
-                        form.formState.errors.description
-                            ?.message
-                    }
+                    label="Date and time"
+                    htmlFor="date"
+                    error={errors.date?.message}
                 >
                     <Input
-                        id="description"
-                        type="text"
-                        maxLength={250}
-                        placeholder="e.g. Lunch at work"
-                        {...form.register("description")}
+                        id="date"
+                        type="datetime-local"
+                        aria-invalid={!!errors.date}
+                        aria-describedby={errors.date ? "date-message" : undefined}
+                        {...form.register("date")}
                     />
                 </FormField>
 
                 <FormField
                     label="Category"
                     htmlFor="category"
-                    description="Category is optional."
+                    optional
+                    description={
+                        categoriesError
+                            ? "Categories couldn't be loaded."
+                            : undefined
+                    }
                 >
                     <Select
                         id="category"
@@ -162,8 +168,8 @@ export default function AddExpenseForm() {
                             {isCategoriesLoading
                                 ? "Loading categories..."
                                 : categoriesError
-                                    ? "Unable to load categories"
-                                    : "Select a category"}
+                                    ? "Unavailable"
+                                    : "No category"}
                         </option>
 
                         {categories.map((category) => (
@@ -176,21 +182,49 @@ export default function AddExpenseForm() {
                         ))}
                     </Select>
                 </FormField>
+            </div>
 
-                <div className="border-t border-border pt-5 sm:pt-6">
-                    <Button
-                        type="submit"
-                        disabled={
-                            createExpenseMutation.isPending
-                        }
-                        className="w-full sm:w-auto"
-                    >
-                        {createExpenseMutation.isPending
-                            ? "Adding..."
-                            : "Add expense"}
-                    </Button>
-                </div>
-            </form>
-        </section>
+            <div className="-mx-5 flex flex-col-reverse gap-2.5 border-t border-surface-muted px-5 pt-5 sm:-mx-6 sm:flex-row sm:justify-end sm:px-6">
+                <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={onCancel}
+                    disabled={isPending}
+                >
+                    Cancel
+                </Button>
+
+                <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="sm:min-w-[140px]"
+                >
+                    {isPending ? (
+                        <>
+                            <span
+                                aria-hidden="true"
+                                className="h-4 w-4 animate-spin rounded-full border-2 border-text-on-dark/30 border-t-text-on-dark"
+                            />
+                            Adding...
+                        </>
+                    ) : (
+                        <>
+                            <svg
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                                className="h-4 w-4 text-accent"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.2"
+                                strokeLinecap="round"
+                            >
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            Add expense
+                        </>
+                    )}
+                </Button>
+            </div>
+        </form>
     );
 }

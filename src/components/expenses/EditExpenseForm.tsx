@@ -93,7 +93,7 @@ export default function EditExpenseForm({
                         form.formState.errors.amount?.message
                     }
                 >
-                    <div className="flex border border-border bg-surface focus-within:border-border-strong">
+                    <div className="flex overflow-hidden rounded-[10px] border border-border bg-surface transition-[border-color,box-shadow] focus-within:border-dark focus-within:ring-4 focus-within:ring-accent/40">
                         <span className="flex items-center border-r border-border px-3 text-sm text-text-secondary">
                             GH₵
                         </span>
@@ -105,7 +105,7 @@ export default function EditExpenseForm({
                             step="0.01"
                             placeholder="0.00"
                             {...form.register("amount")}
-                            className="border-0 focus:border-0"
+                            className="rounded-none border-0 focus:border-0 focus:ring-0"
                         />
                     </div>
                 </FormField>
@@ -144,7 +144,7 @@ export default function EditExpenseForm({
             <FormField
                 label="Category"
                 htmlFor="edit-category"
-                description="Category is optional."
+                optional
             >
                 <Select
                     id="edit-category"
@@ -177,8 +177,8 @@ export default function EditExpenseForm({
                 <Button
                     type="button"
                     onClick={onCancel}
+                    variant="secondary"
                     disabled={updateExpenseMutation.isPending}
-                    className="bg-surface text-text-primary hover:bg-surface-muted"
                 >
                     Cancel
                 </Button>

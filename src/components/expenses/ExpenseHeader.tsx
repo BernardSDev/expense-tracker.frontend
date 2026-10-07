@@ -3,18 +3,23 @@ type ExpenseHeaderProps = {
 };
 
 function ExpenseHeader({onAddExpense}: ExpenseHeaderProps) {
+    const monthLabel = new Date().toLocaleDateString("en-GB", {
+        month: "long",
+        year: "numeric",
+    });
+
     return (
-        <header className="mb-10 flex items-start justify-between gap-6">
-            <div className="max-w-2xl">
+        <header className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
+            <div className="min-w-0">
                 <p className="text-sm font-medium text-text-secondary">
-                    Expenses
+                    {monthLabel}
                 </p>
 
-                <h1 className="mt-2 text-4xl font-semibold tracking-tight text-text-primary">
-                    Keep track of where your money goes.
+                <h1 className="mt-1 text-[1.75rem] font-semibold tracking-[-0.03em] text-text-primary sm:text-3xl">
+                    Expenses
                 </h1>
 
-                <p className="mt-3 text-base text-text-secondary">
+                <p className="mt-1 hidden text-sm text-text-secondary sm:block">
                     Record your spending and keep your financial
                     activity organized in one place.
                 </p>
@@ -24,15 +29,20 @@ function ExpenseHeader({onAddExpense}: ExpenseHeaderProps) {
                 <button
                     type="button"
                     onClick={onAddExpense}
-                    className="hidden shrink-0 bg-accent px-6 py-3 text-sm font-semibold text-text-primary transition-colors hover:bg-accent-hover sm:block"
+                    className="hidden h-10 shrink-0 items-center gap-2 rounded-xl bg-dark px-4 text-sm font-semibold text-text-on-dark transition-colors hover:bg-dark-surface sm:inline-flex"
                 >
-                    Add expense
-                    <span
+                    <svg
                         aria-hidden="true"
-                        className="ml-2"
+                        viewBox="0 0 24 24"
+                        className="h-4 w-4 text-accent"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
                     >
-                        +
-                    </span>
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Add expense
                 </button>
             )}
         </header>

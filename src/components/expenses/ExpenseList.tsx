@@ -7,13 +7,16 @@ type ExpenseListProps = {
     error: Error | null;
     onRetry: () => void;
     onAddExpense?: () => void;
+    onEdit: (expense: Expense) => void;
 };
 
 function ExpenseList({
                          expenses,
                          isLoading,
                          error,
-                         onRetry}: ExpenseListProps) {
+                         onRetry,
+                         onAddExpense,
+                         onEdit}: ExpenseListProps) {
     if (isLoading) {
         return (
             <section>
@@ -82,7 +85,7 @@ function ExpenseList({
                 {expenses.map((expense) => (
                     <div
                         key={expense.id}
-                        className="flex items-center justify-between gap-4 px-6 py-5 transition-colors hover:bg-surface-muted/40"
+                        className="group flex items-center justify-between gap-4 px-6 py-5 transition-colors hover:bg-surface-muted/40"
                     >
                         <div className="flex min-w-0 items-center gap-4">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-muted font-semibold text-text-primary">
@@ -122,9 +125,19 @@ function ExpenseList({
                             </div>
                         </div>
 
-                        <p className="shrink-0 font-semibold text-text-primary">
-                            {formatAmount(expense.amount)}
-                        </p>
+                        <div className="flex shrink-0 items-center gap-4">
+                            <p className="font-semibold text-text-primary">
+                                {formatAmount(expense.amount)}
+                            </p>
+
+                            <button
+                                type="button"
+                                onClick={() => onEdit(expense)}
+                                className="text-sm font-medium text-text-secondary opacity-0 transition-opacity hover:text-text-primary group-hover:opacity-100 focus:opacity-100"
+                            >
+                                Edit
+                            </button>
+                        </div>
                     </div>
                 ))}
             </div>

@@ -58,7 +58,11 @@ export default function ExpensesPage() {
                         <Modal
                             isOpen={selectedExpense !== null}
                             title="Edit expense"
-                            description="Update the details of this expense."
+                            description={
+                                selectedExpense
+                                    ? `Editing "${selectedExpense.description}"`
+                                    : undefined
+                            }
                             onClose={() => setSelectedExpense(null)}
                         >
                             {selectedExpense && (

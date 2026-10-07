@@ -5,12 +5,15 @@ type ExpenseListProps = {
     expenses: Expense[];
     isLoading: boolean;
     error: Error | null;
+    onRetry: () => void;
+    onAddExpense?: () => void;
 };
 
 function ExpenseList({
-                        expenses,
-                        isLoading,
-                        error,}: ExpenseListProps) {
+                         expenses,
+                         isLoading,
+                         error,
+                         onRetry}: ExpenseListProps) {
     if (isLoading) {
         return (
             <section>
@@ -21,10 +24,27 @@ function ExpenseList({
 
     if (error) {
         return (
-            <section>
-                <p>
-                    Unable to load your expenses.
+            <section className="border border-red-200 bg-red-50 px-6 py-12 text-center">
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-sm font-semibold text-red-600">
+                    !
+                </div>
+
+                <h2 className="mt-4 text-base font-semibold text-text-primary">
+                    We couldn't load your expenses
+                </h2>
+
+                <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary">
+                    Something went wrong while loading your expenses.
+                    Please try again.
                 </p>
+
+                <button
+                    type="button"
+                    onClick={onRetry}
+                    className="mt-5 bg-accent px-5 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:bg-accent-hover"
+                >
+                    Try again
+                </button>
             </section>
         );
     }

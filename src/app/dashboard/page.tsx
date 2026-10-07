@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { apiRequest } from "@/lib/api";
-import AuthNavbar from "@/components/AuthNavbar";
+import AuthNavbar from "@/components/navigation/AuthNavbar";
+
 
 type Expense = {
     id: number;

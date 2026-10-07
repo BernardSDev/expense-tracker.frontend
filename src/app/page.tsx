@@ -1,6 +1,6 @@
 import Link from "next/link";
-import TrackOrganizeUnderstand from "@/components/TrackOrganizeUnderstand";
-import FinalCTA from "@/components/FinalCTA";
+import TrackOrganizeUnderstand from "@/components/marketing/TrackOrganizeUnderstand";
+import FinalCTA from "@/components/marketing/FinalCTA";
 import Footer from "@/components/Footer";
 
 export default function Home() {

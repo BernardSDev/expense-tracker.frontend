@@ -30,7 +30,7 @@ function ExpenseList({
                 </div>
 
                 <h2 className="mt-4 text-base font-semibold text-text-primary">
-                    We couldn't load your expenses
+                    We could&#39;t load your expenses
                 </h2>
 
                 <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary">

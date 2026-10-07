@@ -1,12 +1,13 @@
 "use client";
 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import AuthNavbar from "@/components/AuthNavbar";
 import ExpenseHeader from "@/components/expenses/ExpenseHeader";
 import ExpenseList from "@/components/expenses/ExpenseList";
 import ExpenseSummary from "@/components/expenses/ExpenseSummary";
 
 import { useExpensesQuery } from "@/queries/expenses";
+import AddExpenseForm from "@/components/expenses/AddExpenseForm";
+import AuthNavbar from "@/components/navigation/AuthNavbar";
 
 export default function ExpensesPage() {
     const {
@@ -36,6 +37,10 @@ export default function ExpensesPage() {
                             error={error}
                             onRetry={refetch}
                         />
+
+                        <div className="mt-8">
+                            <AddExpenseForm />
+                        </div>
                     </div>
                 </main>
             </div>

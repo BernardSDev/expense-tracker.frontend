@@ -10,6 +10,7 @@ export function createExpense(data: {
     amount: number;
     description: string;
     date: string;
+    categoryId?: number;
 }) {
     return apiRequest(EXPENSES_API_URL, {
         method: "POST",
@@ -26,6 +27,7 @@ export function updateExpense(
         amount: number;
         description: string;
         date: string;
+        categoryId?: number;
     }
 ) {
     return apiRequest(`${EXPENSES_API_URL}/${id}`, {

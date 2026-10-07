@@ -1,212 +1,181 @@
 "use client";
 
-import type { FormEvent } from "react";
+import {useState} from "react";
 
-type AddExpenseFormProps = {
-    amount: string;
-    description: string;
-    date: string;
-    time: string;
-    isSubmitting: boolean;
-    error: string;
-    success: string;
-    onAmountChange: (value: string) => void;
-    onDescriptionChange: (value: string) => void;
-    onDateChange: (value: string) => void;
-    onTimeChange: (value: string) => void;
-    onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-};
+import {toast} from "sonner";
 
-export default function AddExpenseForm({
-                                           amount,
-                                           description,
-                                           date,
-                                           time,
-                                           isSubmitting,
-                                           error,
-                                           success,
-                                           onAmountChange,
-                                           onDescriptionChange,
-                                           onDateChange,
-                                           onTimeChange,
-                                           onSubmit,
-                                       }: AddExpenseFormProps) {
+import Button from "@/components/ui/Button";
+import FormField from "@/components/ui/FormField";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+
+import { useCreateExpenseMutation } from "@/mutations/expenses";
+import { useCategoriesQuery } from "@/queries/categories";
+
+export default function AddExpenseForm() {
+    const {
+        data: categories = [],
+        isLoading: isCategoriesLoading,
+        error: categoriesError,
+    } = useCategoriesQuery();
+
+    const createExpenseMutation = useCreateExpenseMutation();
+
+    const [amount, setAmount] = useState("");
+    const [description, setDescription] = useState("");
+    const [date, setDate] = useState("");
+    const [categoryId, setCategoryId] = useState("");
+
+    function handleSubmit(
+        event: React.FormEvent<HTMLFormElement>
+    ) {
+        event.preventDefault();
+
+        createExpenseMutation.mutate(
+            {
+                amount: Number(amount),
+                description,
+                date: new Date(date).toISOString(),
+                ...(categoryId
+                    ? { categoryId: Number(categoryId) }
+                    : {}),
+            },
+            {
+                onSuccess: () => {
+                    toast.success("Expense added successfully.");
+                },
+                onError: () => {
+                    toast.error(
+                        "We couldn't add the expense. Please try again."
+                    );
+                },
+            }
+        );
+    }
+
     return (
-        <section className="order-1 h-fit border border-border bg-surface lg:order-2">
-            <div className="border-b border-border px-6 py-6 sm:px-7">
-                <div className="flex items-start justify-between gap-4">
-                    <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">
-                            New expense
-                        </p>
+        <section className="border border-border bg-surface">
+            <div className="border-b border-border px-6 py-5">
+                <h2 className="text-base font-semibold text-text-primary">
+                    Add expense
+                </h2>
 
-                        <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-text-primary">
-                            Add expense
-                        </h2>
-
-                        <p className="mt-2 max-w-xs text-sm leading-6 text-text-secondary">
-                            Record something you spent money on.
-                        </p>
-                    </div>
-
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-accent text-lg font-medium text-text-primary">
-                        +
-                    </div>
-                </div>
+                <p className="mt-1 text-sm text-text-secondary">
+                    Record a new expense and keep your spending organized.
+                </p>
             </div>
 
             <form
-                onSubmit={onSubmit}
-                className="space-y-6 p-6 sm:p-7"
+                onSubmit={handleSubmit}
+                className="space-y-6 px-6 py-6"
             >
-                {/* Amount */}
-                <div>
-                    <label
+                <div className="grid gap-6 sm:grid-cols-2">
+                    <FormField
+                        label="Amount"
                         htmlFor="amount"
-                        className="mb-2 block text-sm font-medium text-text-primary"
                     >
-                        Amount
-                    </label>
+                        <div className="flex border border-border bg-surface">
+                            <span className="flex items-center border-r border-border px-3 text-sm text-text-secondary">
+                                GH₵
+                            </span>
 
-                    <div className="relative">
-                        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-text-secondary">
-                            GH₵
-                        </span>
+                            <Input
+                                id="amount"
+                                name="amount"
+                                type="number"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="0.00"
+                                value={amount}
+                                onChange={(event) =>
+                                    setAmount(event.target.value)
+                                }
+                                className="focus:border-0"
+                            />
+                        </div>
+                    </FormField>
 
-                        <input
-                            id="amount"
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="0.00"
-                            value={amount}
-                            onChange={(event) =>
-                                onAmountChange(event.target.value)
-                            }
-                            className="h-13 w-full border border-border-strong bg-surface pl-14 pr-4 text-lg font-medium text-text-primary outline-none transition placeholder:text-text-muted focus:border-text-primary focus:ring-2 focus:ring-accent/40"
-                        />
-                    </div>
-                </div>
-
-                {/* Description */}
-                <div>
-                    <label
-                        htmlFor="description"
-                        className="mb-2 block text-sm font-medium text-text-primary"
+                    <FormField
+                        label="Date"
+                        htmlFor="date"
                     >
-                        Description
-                    </label>
-
-                    <input
-                        id="description"
-                        type="text"
-                        placeholder="What did you spend on?"
-                        value={description}
-                        onChange={(event) =>
-                            onDescriptionChange(event.target.value)
-                        }
-                        className="h-12 w-full border border-border-strong bg-surface px-4 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-text-primary focus:ring-2 focus:ring-accent/40"
-                    />
-                </div>
-
-                {/* Date and Time */}
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    <div>
-                        <label
-                            htmlFor="date"
-                            className="mb-2 block text-sm font-medium text-text-primary"
-                        >
-                            Date
-                        </label>
-
-                        <input
+                        <Input
                             id="date"
-                            type="date"
+                            name="date"
+                            type="datetime-local"
                             value={date}
                             onChange={(event) =>
-                                onDateChange(event.target.value)
+                                setDate(event.target.value)
                             }
-                            className="h-12 w-full border border-border-strong bg-surface px-3 text-sm text-text-primary outline-none transition focus:border-text-primary focus:ring-2 focus:ring-accent/40"
                         />
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor="time"
-                            className="mb-2 block text-sm font-medium text-text-primary"
-                        >
-                            Time
-                        </label>
-
-                        <input
-                            id="time"
-                            type="time"
-                            value={time}
-                            onChange={(event) =>
-                                onTimeChange(event.target.value)
-                            }
-                            className="h-12 w-full border border-border-strong bg-surface px-3 text-sm text-text-primary outline-none transition focus:border-text-primary focus:ring-2 focus:ring-accent/40"
-                        />
-                    </div>
+                    </FormField>
                 </div>
 
-                {/* Feedback */}
-                {error && (
-                    <div className="flex items-start gap-3 border border-red-200 bg-red-50 px-4 py-3">
-                        <span className="mt-0.5 text-sm text-red-600">
-                            !
-                        </span>
-
-                        <p className="text-sm leading-5 text-red-700">
-                            {error}
-                        </p>
-                    </div>
-                )}
-
-                {success && (
-                    <div className="flex items-start gap-3 border border-green-200 bg-green-50 px-4 py-3">
-                        <span className="mt-0.5 text-sm text-green-600">
-                            ✓
-                        </span>
-
-                        <p className="text-sm leading-5 text-green-700">
-                            {success}
-                        </p>
-                    </div>
-                )}
-
-                {/* Submit */}
-                <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`flex h-12 w-full items-center justify-center gap-2 text-sm font-semibold text-text-primary transition ${
-                        isSubmitting
-                            ? "cursor-not-allowed bg-neutral-300"
-                            : "bg-accent hover:bg-accent-hover"
-                    }`}
+                <FormField
+                    label="Description"
+                    htmlFor="description"
                 >
-                    {isSubmitting ? (
-                        <>
-                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-text-primary/30 border-t-text-primary" />
-                            Adding expense...
-                        </>
-                    ) : (
-                        <>
-                            Add expense
+                    <Input
+                        id="description"
+                        name="description"
+                        type="text"
+                        maxLength={250}
+                        placeholder="e.g. Lunch at work"
+                        value={description}
+                        onChange={(event) =>
+                            setDescription(event.target.value)
+                        }
+                    />
+                </FormField>
 
-                            <span
-                                aria-hidden="true"
-                                className="text-base"
+                <FormField
+                    label="Category"
+                    htmlFor="category"
+                    description="Category is optional."
+                >
+                    <Select
+                        id="category"
+                        name="categoryId"
+                        value={categoryId}
+                        onChange={(event) =>
+                            setCategoryId(event.target.value)
+                        }
+                        disabled={
+                            isCategoriesLoading ||
+                            !!categoriesError
+                        }
+                    >
+                        <option value="">
+                            {isCategoriesLoading
+                                ? "Loading categories..."
+                                : categoriesError
+                                    ? "Unable to load categories"
+                                    : "Select a category"}
+                        </option>
+
+                        {categories.map((category) => (
+                            <option
+                                key={category.id}
+                                value={category.id}
                             >
-                                →
-                            </span>
-                        </>
-                    )}
-                </button>
+                                {category.name}
+                            </option>
+                        ))}
+                    </Select>
+                </FormField>
 
-                <p className="text-center text-xs text-text-muted">
-                    Your expense will be added to your activity.
-                </p>
+                <div className="flex justify-end border-t border-border pt-6">
+                    <Button
+                        type="submit"
+                        disabled={
+                            createExpenseMutation.isPending
+                        }
+                    >
+                        {createExpenseMutation.isPending
+                            ? "Adding..."
+                            : "Add expense"}
+                    </Button>
+                </div>
             </form>
         </section>
     );

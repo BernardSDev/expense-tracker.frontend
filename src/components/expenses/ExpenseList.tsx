@@ -1,5 +1,10 @@
 import { Expense } from "@/types/expense";
-import {formatAmount, formatDate, formatTime, getExpenseInitial} from "@/utils/expenses";
+import {
+    formatAmount,
+    formatDate,
+    formatTime,
+    getExpenseInitial,
+} from "@/utils/expenses";
 
 type ExpenseListProps = {
     expenses: Expense[];
@@ -18,7 +23,8 @@ function ExpenseList({
                          onRetry,
                          onAddExpense,
                          onEdit,
-                         onDelete}: ExpenseListProps) {
+                         onDelete,
+                     }: ExpenseListProps) {
     if (isLoading) {
         return (
             <section>
@@ -35,7 +41,7 @@ function ExpenseList({
                 </div>
 
                 <h2 className="mt-4 text-base font-semibold text-text-primary">
-                    We could&#39;t load your expenses
+                    We couldn't load your expenses
                 </h2>
 
                 <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary">
@@ -64,8 +70,8 @@ function ExpenseList({
 
     return (
         <section className="border border-border bg-surface">
-            <div className="flex items-center justify-between border-b border-border px-6 py-5">
-                <div>
+            <div className="flex items-center justify-between border-b border-border px-4 py-5 sm:px-6">
+                <div className="min-w-0">
                     <h2 className="text-base font-semibold text-text-primary">
                         Recent expenses
                     </h2>
@@ -75,7 +81,7 @@ function ExpenseList({
                     </p>
                 </div>
 
-                <p className="text-sm text-text-muted">
+                <p className="shrink-0 text-sm text-text-muted">
                     {expenses.length}{" "}
                     {expenses.length === 1
                         ? "expense"
@@ -87,8 +93,9 @@ function ExpenseList({
                 {expenses.map((expense) => (
                     <div
                         key={expense.id}
-                        className="group flex items-center justify-between gap-4 px-6 py-5 transition-colors hover:bg-surface-muted/40"
+                        className="group flex flex-col gap-4 px-4 py-5 transition-colors hover:bg-surface-muted/40 sm:flex-row sm:items-center sm:justify-between sm:px-6"
                     >
+                        {/* Left side */}
                         <div className="flex min-w-0 items-center gap-4">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-muted font-semibold text-text-primary">
                                 {getExpenseInitial(
@@ -96,38 +103,41 @@ function ExpenseList({
                                 )}
                             </div>
 
-                            <div className="min-w-0">
+                            <div className="min-w-0 flex-1">
                                 <p className="truncate font-medium text-text-primary">
                                     {expense.description}
                                 </p>
 
                                 <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-secondary">
-                                <span>
-                                    {formatDate(expense.date)}
-                                </span>
+                                    <span>
+                                        {formatDate(expense.date)}
+                                    </span>
 
-                                    <span aria-hidden="true">·</span>
+                                    <span aria-hidden="true">
+                                        ·
+                                    </span>
 
                                     <span>
-                                    {formatTime(expense.date)}
-                                </span>
+                                        {formatTime(expense.date)}
+                                    </span>
 
                                     {expense.categoryName && (
                                         <>
-                                        <span aria-hidden="true">
-                                            ·
-                                        </span>
+                                            <span aria-hidden="true">
+                                                ·
+                                            </span>
 
                                             <span className="font-medium text-text-primary">
-                                            {expense.categoryName}
-                                        </span>
+                                                {expense.categoryName}
+                                            </span>
                                         </>
                                     )}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex shrink-0 items-center gap-4">
+                        {/* Right side */}
+                        <div className="flex w-full shrink-0 items-center justify-between gap-4 sm:w-auto sm:justify-end">
                             <p className="font-semibold text-text-primary">
                                 {formatAmount(expense.amount)}
                             </p>
@@ -135,7 +145,7 @@ function ExpenseList({
                             <button
                                 type="button"
                                 onClick={() => onEdit(expense)}
-                                className="text-sm font-medium text-text-secondary opacity-0 transition-opacity hover:text-text-primary group-hover:opacity-100 focus:opacity-100"
+                                className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100 sm:focus:opacity-100"
                             >
                                 Edit
                             </button>
@@ -143,7 +153,7 @@ function ExpenseList({
                             <button
                                 type="button"
                                 onClick={() => onDelete(expense)}
-                                className="text-sm font-medium text-text-secondary opacity-0 transition-opacity hover:text-red-600 group-hover:opacity-100 focus:opacity-100"
+                                className="text-sm font-medium text-text-secondary transition-colors hover:text-red-600 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100 sm:focus:opacity-100"
                             >
                                 Delete
                             </button>

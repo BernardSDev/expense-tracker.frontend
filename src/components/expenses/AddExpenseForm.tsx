@@ -68,21 +68,22 @@ export default function AddExpenseForm() {
 
     return (
         <section className="border border-border bg-surface">
-            <div className="border-b border-border px-6 py-5">
+            <div className="border-b border-border px-4 py-5 sm:px-6">
                 <h2 className="text-base font-semibold text-text-primary">
                     Add expense
                 </h2>
 
-                <p className="mt-1 text-sm text-text-secondary">
-                    Record a new expense and keep your spending organized.
+                <p className="mt-1 text-sm leading-6 text-text-secondary">
+                    Record a new expense and keep your spending
+                    organized.
                 </p>
             </div>
 
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6 px-6 py-6"
+                className="space-y-5 px-4 py-5 sm:space-y-6 sm:px-6 sm:py-6"
             >
-                <div className="grid gap-6 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
                     <FormField
                         label="Amount"
                         htmlFor="amount"
@@ -92,7 +93,7 @@ export default function AddExpenseForm() {
                         }
                     >
                         <div className="flex border border-border bg-surface focus-within:border-border-strong">
-                            <span className="flex items-center border-r border-border px-3 text-sm text-text-secondary">
+                            <span className="flex shrink-0 items-center border-r border-border px-3 text-sm text-text-secondary">
                                 GH₵
                             </span>
 
@@ -103,7 +104,7 @@ export default function AddExpenseForm() {
                                 step="0.01"
                                 placeholder="0.00"
                                 {...form.register("amount")}
-                                className="focus:border-0"
+                                className="min-w-0 border-0 focus:border-0"
                             />
                         </div>
                     </FormField>
@@ -173,12 +174,13 @@ export default function AddExpenseForm() {
                     </Select>
                 </FormField>
 
-                <div className="flex justify-end border-t border-border pt-6">
+                <div className="border-t border-border pt-5 sm:pt-6">
                     <Button
                         type="submit"
                         disabled={
                             createExpenseMutation.isPending
                         }
+                        className="w-full sm:w-auto"
                     >
                         {createExpenseMutation.isPending
                             ? "Adding..."

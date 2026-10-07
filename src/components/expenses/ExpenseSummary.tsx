@@ -19,7 +19,7 @@ function ExpenseSummary({
     return (
         <section className="mb-12 grid overflow-hidden border border-border bg-border sm:grid-cols-2">
             {/* Total spending */}
-            <div className="bg-surface px-5 py-6 sm:px-7 sm:py-7">
+            <div className="bg-surface px-5 py-5 sm:px-7 sm:py-7">
                 {isLoading ? (
                     <div className="animate-pulse">
                         <div className="h-4 w-28 bg-surface-muted" />
@@ -54,7 +54,7 @@ function ExpenseSummary({
             </div>
 
             {/* Expense count */}
-            <div className="bg-surface px-6 py-7 sm:border-l sm:border-border sm:px-7">
+            <div className="bg-surface px-5 py-5 sm:border-l sm:border-border sm:px-7 sm:py-7">
                 {isLoading ? (
                     <div className="animate-pulse">
                         <div className="h-4 w-32 bg-surface-muted" />

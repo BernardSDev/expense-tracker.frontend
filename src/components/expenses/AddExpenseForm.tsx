@@ -1,8 +1,13 @@
 "use client";
 
-import {useState} from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
-import {toast} from "sonner";
+import {
+    expenseSchema,
+    type ExpenseFormData,
+} from "@/schemas/expense";
 
 import Button from "@/components/ui/Button";
 import FormField from "@/components/ui/FormField";
@@ -19,30 +24,38 @@ export default function AddExpenseForm() {
         error: categoriesError,
     } = useCategoriesQuery();
 
-    const createExpenseMutation = useCreateExpenseMutation();
+    const createExpenseMutation =
+        useCreateExpenseMutation();
 
-    const [amount, setAmount] = useState("");
-    const [description, setDescription] = useState("");
-    const [date, setDate] = useState("");
-    const [categoryId, setCategoryId] = useState("");
+    const form = useForm<ExpenseFormData>({
+        resolver: zodResolver(expenseSchema),
+        defaultValues: {
+            amount: undefined,
+            description: "",
+            date: "",
+            categoryId: "",
+        },
+    });
 
-    function handleSubmit(
-        event: React.FormEvent<HTMLFormElement>
-    ) {
-        event.preventDefault();
-
+    function onSubmit(data: ExpenseFormData) {
         createExpenseMutation.mutate(
             {
-                amount: Number(amount),
-                description,
-                date: new Date(date).toISOString(),
-                ...(categoryId
-                    ? { categoryId: Number(categoryId) }
+                amount: Number(data.amount),
+                description: data.description,
+                date: new Date(data.date).toISOString(),
+                ...(data.categoryId
+                    ? {
+                        categoryId: Number(data.categoryId),
+                    }
                     : {}),
             },
             {
                 onSuccess: () => {
-                    toast.success("Expense added successfully.");
+                    toast.success(
+                        "Expense added successfully."
+                    );
+
+                    form.reset();
                 },
                 onError: () => {
                     toast.error(
@@ -66,30 +79,30 @@ export default function AddExpenseForm() {
             </div>
 
             <form
-                onSubmit={handleSubmit}
+                onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6 px-6 py-6"
             >
                 <div className="grid gap-6 sm:grid-cols-2">
                     <FormField
                         label="Amount"
                         htmlFor="amount"
+                        error={
+                            form.formState.errors.amount
+                                ?.message
+                        }
                     >
-                        <div className="flex border border-border bg-surface">
+                        <div className="flex border border-border bg-surface focus-within:border-border-strong">
                             <span className="flex items-center border-r border-border px-3 text-sm text-text-secondary">
                                 GH₵
                             </span>
 
                             <Input
                                 id="amount"
-                                name="amount"
                                 type="number"
                                 min="0.01"
                                 step="0.01"
                                 placeholder="0.00"
-                                value={amount}
-                                onChange={(event) =>
-                                    setAmount(event.target.value)
-                                }
+                                {...form.register("amount")}
                                 className="focus:border-0"
                             />
                         </div>
@@ -98,15 +111,15 @@ export default function AddExpenseForm() {
                     <FormField
                         label="Date"
                         htmlFor="date"
+                        error={
+                            form.formState.errors.date
+                                ?.message
+                        }
                     >
                         <Input
                             id="date"
-                            name="date"
                             type="datetime-local"
-                            value={date}
-                            onChange={(event) =>
-                                setDate(event.target.value)
-                            }
+                            {...form.register("date")}
                         />
                     </FormField>
                 </div>
@@ -114,17 +127,17 @@ export default function AddExpenseForm() {
                 <FormField
                     label="Description"
                     htmlFor="description"
+                    error={
+                        form.formState.errors.description
+                            ?.message
+                    }
                 >
                     <Input
                         id="description"
-                        name="description"
                         type="text"
                         maxLength={250}
                         placeholder="e.g. Lunch at work"
-                        value={description}
-                        onChange={(event) =>
-                            setDescription(event.target.value)
-                        }
+                        {...form.register("description")}
                     />
                 </FormField>
 
@@ -135,11 +148,7 @@ export default function AddExpenseForm() {
                 >
                     <Select
                         id="category"
-                        name="categoryId"
-                        value={categoryId}
-                        onChange={(event) =>
-                            setCategoryId(event.target.value)
-                        }
+                        {...form.register("categoryId")}
                         disabled={
                             isCategoriesLoading ||
                             !!categoriesError

@@ -8,6 +8,7 @@ type ExpenseListProps = {
     onRetry: () => void;
     onAddExpense?: () => void;
     onEdit: (expense: Expense) => void;
+    onDelete: (expense: Expense) => void;
 };
 
 function ExpenseList({
@@ -16,7 +17,8 @@ function ExpenseList({
                          error,
                          onRetry,
                          onAddExpense,
-                         onEdit}: ExpenseListProps) {
+                         onEdit,
+                         onDelete}: ExpenseListProps) {
     if (isLoading) {
         return (
             <section>
@@ -136,6 +138,14 @@ function ExpenseList({
                                 className="text-sm font-medium text-text-secondary opacity-0 transition-opacity hover:text-text-primary group-hover:opacity-100 focus:opacity-100"
                             >
                                 Edit
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => onDelete(expense)}
+                                className="text-sm font-medium text-text-secondary opacity-0 transition-opacity hover:text-red-600 group-hover:opacity-100 focus:opacity-100"
+                            >
+                                Delete
                             </button>
                         </div>
                     </div>

@@ -1,15 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {createExpense, updateExpense} from "@/lib/expenses";
+import {createExpense, updateExpense, deleteExpense} from "@/lib/expenses";
 import { expensesQueryKey } from "@/queries/expenses";
 
 type CreateExpenseData = {
-    amount: number;
-    description: string;
-    date: string;
-    categoryId?: number;
-};
-
-type UpdateExpenseData = {
     amount: number;
     description: string;
     date: string;
@@ -31,6 +24,13 @@ export function useCreateExpenseMutation() {
     });
 }
 
+type UpdateExpenseData = {
+    amount: number;
+    description: string;
+    date: string;
+    categoryId?: number;
+};
+
 export function useUpdateExpenseMutation() {
     const queryClient = useQueryClient();
 
@@ -42,6 +42,25 @@ export function useUpdateExpenseMutation() {
             id: number;
             data: UpdateExpenseData;
         }) => updateExpense(id, data),
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: expensesQueryKey,
+            });
+        },
+    });
+}
+
+type DeleteExpenseVariables = {
+    id: number;
+};
+
+export function useDeleteExpenseMutation() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id }: DeleteExpenseVariables) =>
+            deleteExpense(id),
 
         onSuccess: () => {
             queryClient.invalidateQueries({

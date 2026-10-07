@@ -9,20 +9,15 @@ function ExpenseHeader({onAddExpense}: ExpenseHeaderProps) {
     });
 
     return (
-        <header className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
+        <header className="mb-[18px] flex items-end justify-between gap-4 sm:mb-6">
             <div className="min-w-0">
-                <p className="text-sm font-medium text-text-secondary">
+                <p className="text-[13px] font-medium text-text-secondary">
                     {monthLabel}
                 </p>
 
-                <h1 className="mt-1 text-[1.75rem] font-semibold tracking-[-0.03em] text-text-primary sm:text-3xl">
+                <h1 className="mt-0.5 text-[26px] font-semibold tracking-[-0.02em] text-text-primary sm:mt-1 sm:text-[30px]">
                     Expenses
                 </h1>
-
-                <p className="mt-1 hidden text-sm text-text-secondary sm:block">
-                    Record your spending and keep your financial
-                    activity organized in one place.
-                </p>
             </div>
 
             {onAddExpense && (

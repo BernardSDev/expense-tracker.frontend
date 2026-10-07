@@ -31,6 +31,14 @@ export default function ExpensesPage() {
 
     const deleteExpenseMutation = useDeleteExpenseMutation();
 
+    function handleAddExpense() {
+        document
+            .getElementById("add-expense")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        document.getElementById("amount")?.focus({ preventScroll: true });
+    }
+
     function handleEdit(expense: Expense) {
         setSelectedExpense(expense);
     }
@@ -68,8 +76,8 @@ export default function ExpensesPage() {
                 <AuthNavbar />
 
                 <main>
-                    <div className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 sm:pb-12 sm:pt-10 lg:px-8">
-                        <ExpenseHeader />
+                    <div className="mx-auto max-w-[1040px] px-4 pb-28 pt-5 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8">
+                        <ExpenseHeader onAddExpense={handleAddExpense} />
 
                         <ExpenseSummary
                             expenses={expenses}
@@ -81,6 +89,7 @@ export default function ExpensesPage() {
                             isLoading={isLoading}
                             error={error}
                             onRetry={refetch}
+                            onAddExpense={handleAddExpense}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
                         />
@@ -88,6 +97,26 @@ export default function ExpensesPage() {
                         <div className="mt-8">
                             <AddExpenseForm />
                         </div>
+
+                        {/* Mobile floating add button, sits above the bottom nav */}
+                        <button
+                            type="button"
+                            onClick={handleAddExpense}
+                            className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom)+1.25rem)] right-5 z-40 inline-flex h-[52px] items-center gap-2 rounded-2xl bg-dark pl-4 pr-5 text-[15px] font-semibold text-text-on-dark shadow-float transition-colors hover:bg-dark-surface sm:hidden"
+                        >
+                            <svg
+                                aria-hidden="true"
+                                viewBox="0 0 24 24"
+                                className="h-[18px] w-[18px] text-accent"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.2"
+                                strokeLinecap="round"
+                            >
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            Add expense
+                        </button>
 
                         <Modal
                             isOpen={selectedExpense !== null}

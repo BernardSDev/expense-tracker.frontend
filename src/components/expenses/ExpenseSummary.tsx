@@ -77,45 +77,59 @@ function ExpenseSummary({
         );
     }
 
+    const categoryBar = (variant: "dark" | "light") => (
+        <div
+            className="flex h-2 gap-[3px] overflow-hidden rounded-full"
+            aria-hidden="true"
+        >
+            {categoryTotals.map((category) => {
+                const styles = getCategoryStyles(category.categoryName);
+
+                return (
+                    <div
+                        key={category.name}
+                        className={`rounded-full ${variant === "dark" ? styles.barOnDark : styles.bar}`}
+                        style={{
+                            width: `${(category.total / totalExpenses) * 100}%`,
+                        }}
+                    />
+                );
+            })}
+        </div>
+    );
+
     return (
-        <section className="mb-8 grid gap-3 sm:grid-cols-3 sm:gap-4">
+        <section className="mb-[18px] grid gap-4 sm:mb-6 sm:grid-cols-3">
             {/* Total spending */}
-            <div className="flex flex-col gap-5 rounded-2xl bg-dark p-5 text-text-on-dark sm:p-6">
+            <div className="flex flex-col gap-4 rounded-[20px] bg-dark p-5 text-text-on-dark sm:gap-2 sm:rounded-2xl">
                 <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                        <p className="text-sm text-text-muted">
-                            Total spending
+                    <div className="flex min-w-0 flex-col gap-1.5 sm:gap-2">
+                        <p className="text-[13px] text-text-muted">
+                            <span className="sm:hidden">Total spent this month</span>
+                            <span className="hidden sm:inline">Total spent</span>
                         </p>
 
-                        <p className="tabular mt-2 text-3xl font-semibold tracking-[-0.04em]">
+                        <p className="tabular text-[32px] font-semibold leading-tight tracking-[-0.03em] sm:text-[28px]">
                             {formatAmount(totalExpenses)}
                         </p>
                     </div>
 
-                    <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-text-primary">
+                    <span className="shrink-0 rounded-full bg-accent px-2.5 py-[5px] text-xs font-semibold text-text-primary sm:hidden">
                         {expenses.length}{" "}
                         {expenses.length === 1 ? "expense" : "expenses"}
                     </span>
                 </div>
 
-                {totalExpenses > 0 && (
-                    <div className="space-y-3">
-                        <div
-                            className="flex h-2 gap-[3px] overflow-hidden rounded-full"
-                            aria-hidden="true"
-                        >
-                            {categoryTotals.map((category) => (
-                                <div
-                                    key={category.name}
-                                    className={`rounded-full ${getCategoryStyles(category.categoryName).barOnDark}`}
-                                    style={{
-                                        width: `${(category.total / totalExpenses) * 100}%`,
-                                    }}
-                                />
-                            ))}
-                        </div>
+                <p className="hidden text-[13px] text-text-muted sm:block">
+                    Across {expenses.length}{" "}
+                    {expenses.length === 1 ? "expense" : "expenses"}
+                </p>
 
-                        <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-text-muted">
+                {totalExpenses > 0 && (
+                    <div className="flex flex-col gap-2.5 sm:hidden">
+                        {categoryBar("dark")}
+
+                        <ul className="flex flex-wrap gap-x-[18px] gap-y-1.5 text-[13px] text-text-muted">
                             {categoryTotals.map((category) => (
                                 <li
                                     key={category.name}
@@ -137,35 +151,55 @@ function ExpenseSummary({
             </div>
 
             {/* Largest expense */}
-            <div className="hidden flex-col gap-2 rounded-2xl border border-border bg-surface p-6 sm:flex">
-                <p className="text-sm text-text-secondary">
+            <div className="hidden flex-col gap-2 rounded-2xl border border-border bg-surface p-5 sm:flex">
+                <p className="text-[13px] text-text-secondary">
                     Largest expense
                 </p>
 
-                <p className="tabular text-3xl font-semibold tracking-[-0.04em] text-text-primary">
+                <p className="tabular text-[28px] font-semibold leading-tight tracking-[-0.03em] text-text-primary">
                     {formatAmount(largestExpense?.amount ?? 0)}
                 </p>
 
-                <p className="truncate text-sm text-text-secondary">
+                <p className="truncate text-[13px] text-text-secondary">
                     {largestExpense
                         ? `${largestExpense.description} · ${formatDate(largestExpense.date)}`
                         : "No expenses yet"}
                 </p>
             </div>
 
-            {/* Expense count */}
-            <div className="hidden flex-col gap-2 rounded-2xl border border-border bg-surface p-6 sm:flex">
-                <p className="text-sm text-text-secondary">
-                    Expenses recorded
+            {/* By category */}
+            <div className="hidden flex-col gap-3 rounded-2xl border border-border bg-surface p-5 sm:flex">
+                <p className="text-[13px] text-text-secondary">
+                    By category
                 </p>
 
-                <p className="tabular text-3xl font-semibold tracking-[-0.04em] text-text-primary">
-                    {expenses.length}
-                </p>
+                {totalExpenses > 0 ? (
+                    <>
+                        {categoryBar("light")}
 
-                <p className="text-sm text-text-secondary">
-                    Your spending activity
-                </p>
+                        <ul className="flex flex-col gap-1.5 text-[13px] text-text-primary">
+                            {categoryTotals.map((category) => (
+                                <li
+                                    key={category.name}
+                                    className="flex items-center gap-2"
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        className={`h-2 w-2 rounded-[3px] ${getCategoryStyles(category.categoryName).bar}`}
+                                    />
+                                    {category.name}
+                                    <span className="tabular ml-auto">
+                                        {formatAmount(category.total)}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                ) : (
+                    <p className="text-[13px] text-text-secondary">
+                        No spending yet
+                    </p>
+                )}
             </div>
         </section>
     );

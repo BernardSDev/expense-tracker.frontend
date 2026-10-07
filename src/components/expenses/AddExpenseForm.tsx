@@ -67,7 +67,10 @@ export default function AddExpenseForm() {
     }
 
     return (
-        <section className="overflow-hidden rounded-2xl border border-border bg-surface">
+        <section
+            id="add-expense"
+            className="scroll-mt-6 overflow-hidden rounded-2xl border border-border bg-surface"
+        >
             <div className="border-b border-border px-4 py-5 sm:px-6">
                 <h2 className="text-base font-semibold text-text-primary">
                     Add expense

@@ -7,6 +7,8 @@ export type CategoryStyles = {
     bar: string;
     /** Solid colour for bars and legend dots on the dark summary card */
     barOnDark: string;
+    /** Small dot inside a category pill */
+    dot: string;
 };
 
 export function getCategoryStyles(categoryName: string | null): CategoryStyles {
@@ -16,6 +18,7 @@ export function getCategoryStyles(categoryName: string | null): CategoryStyles {
             color: "text-category-1-strong",
             bar: "bg-category-1",
             barOnDark: "bg-accent",
+            dot: "bg-category-1-strong",
         };
     }
 
@@ -25,6 +28,7 @@ export function getCategoryStyles(categoryName: string | null): CategoryStyles {
             color: "text-category-2-strong",
             bar: "bg-category-2",
             barOnDark: "bg-category-2-on-dark",
+            dot: "bg-category-2-strong",
         };
     }
 
@@ -33,5 +37,6 @@ export function getCategoryStyles(categoryName: string | null): CategoryStyles {
         color: "text-text-primary",
         bar: "bg-border-strong",
         barOnDark: "bg-text-muted",
+        dot: "bg-text-secondary",
     };
 }

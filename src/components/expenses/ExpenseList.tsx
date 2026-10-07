@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
 import { Expense } from "@/types/expense";
 import {
     formatAmount,
@@ -18,6 +22,137 @@ type ExpenseListProps = {
     onDelete: (expense: Expense) => void;
 };
 
+type ExpenseGroup = {
+    key: string;
+    label: string;
+    dateLabel: string;
+    total: number;
+    expenses: Expense[];
+};
+
+const ALL = "All";
+const UNCATEGORIZED = "Uncategorized";
+
+function getDateKey(value: Date) {
+    return [value.getFullYear(), value.getMonth(), value.getDate()].join("-");
+}
+
+function getGroupLabels(date: string) {
+    const value = new Date(date);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const dateLabel = value.toLocaleDateString("en-GB", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+    });
+
+    if (getDateKey(value) === getDateKey(today)) {
+        return { label: "Today", dateLabel };
+    }
+
+    if (getDateKey(value) === getDateKey(yesterday)) {
+        return { label: "Yesterday", dateLabel };
+    }
+
+    return {
+        label: value.toLocaleDateString("en-GB", { weekday: "long" }),
+        dateLabel: value.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        }),
+    };
+}
+
+function groupByDay(expenses: Expense[]): ExpenseGroup[] {
+    const groups = new Map<string, ExpenseGroup>();
+
+    const sorted = [...expenses].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    for (const expense of sorted) {
+        const key = getDateKey(new Date(expense.date));
+        const existing = groups.get(key);
+
+        if (existing) {
+            existing.expenses.push(expense);
+            existing.total += expense.amount;
+            continue;
+        }
+
+        groups.set(key, {
+            key,
+            ...getGroupLabels(expense.date),
+            total: expense.amount,
+            expenses: [expense],
+        });
+    }
+
+    return Array.from(groups.values());
+}
+
+function CategoryIcon({ expense }: { expense: Expense }) {
+    const styles = getCategoryStyles(expense.categoryName);
+
+    return (
+        <span
+            className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${styles.background} ${styles.color}`}
+        >
+            {expense.categoryName === "Groceries" ? (
+                <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    <path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8L5 8z" />
+                    <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+                </svg>
+            ) : expense.categoryName === "Vacation" ? (
+                <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    <path d="M10.5 13.5L4 11l1.5-1.5 7 1 4-4a2 2 0 0 1 3 3l-4 4 1 7L15 22l-2.5-6.5L9 19v2l-1.5 1-1-3-3-1L5 16.5h2l3.5-3z" />
+                </svg>
+            ) : (
+                getExpenseInitial(expense.description)
+            )}
+        </span>
+    );
+}
+
+function SearchIcon() {
+    return (
+        <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-[18px] w-[18px] shrink-0"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+        >
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="M20 20l-4-4" />
+        </svg>
+    );
+}
+
 function ExpenseList({
                          expenses,
                          isLoading,
@@ -27,6 +162,76 @@ function ExpenseList({
                          onEdit,
                          onDelete,
                      }: ExpenseListProps) {
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState(ALL);
+    const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+
+    const categories = useMemo(() => {
+        const names = new Set<string>();
+
+        for (const expense of expenses) {
+            names.add(expense.categoryName ?? UNCATEGORIZED);
+        }
+
+        return [ALL, ...Array.from(names).sort()];
+    }, [expenses]);
+
+    const activeCategory = categories.includes(category) ? category : ALL;
+
+    const filtered = useMemo(() => {
+        const query = search.trim().toLowerCase();
+
+        return expenses.filter((expense) => {
+            const name = expense.categoryName ?? UNCATEGORIZED;
+
+            if (activeCategory !== ALL && name !== activeCategory) {
+                return false;
+            }
+
+            if (!query) {
+                return true;
+            }
+
+            return (
+                expense.description.toLowerCase().includes(query) ||
+                name.toLowerCase().includes(query)
+            );
+        });
+    }, [expenses, search, activeCategory]);
+
+    const groups = useMemo(() => groupByDay(filtered), [filtered]);
+
+    const filteredTotal = filtered.reduce(
+        (total, expense) => total + expense.amount,
+        0
+    );
+
+    useEffect(() => {
+        if (openMenuId === null) {
+            return;
+        }
+
+        function handlePointerDown(event: MouseEvent) {
+            if (!(event.target as Element).closest("[data-expense-menu]")) {
+                setOpenMenuId(null);
+            }
+        }
+
+        function handleEscape(event: KeyboardEvent) {
+            if (event.key === "Escape") {
+                setOpenMenuId(null);
+            }
+        }
+
+        document.addEventListener("mousedown", handlePointerDown);
+        document.addEventListener("keydown", handleEscape);
+
+        return () => {
+            document.removeEventListener("mousedown", handlePointerDown);
+            document.removeEventListener("keydown", handleEscape);
+        };
+    }, [openMenuId]);
+
     if (isLoading) {
         return (
             <section
@@ -40,7 +245,7 @@ function ExpenseList({
                             key={item}
                             className="flex animate-pulse items-center gap-3 px-4 py-4 sm:px-6"
                         >
-                            <div className="h-10 w-10 shrink-0 rounded-xl bg-surface-muted" />
+                            <div className="h-[42px] w-[42px] shrink-0 rounded-xl bg-surface-muted" />
 
                             <div className="flex-1 space-y-2">
                                 <div className="h-4 w-32 rounded bg-surface-muted" />
@@ -90,7 +295,7 @@ function ExpenseList({
                 </h2>
 
                 <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-text-secondary">
-                    Add your first expense below and it will show up here.
+                    Add your first expense and it will show up here.
                 </p>
 
                 {onAddExpense && (
@@ -106,187 +311,308 @@ function ExpenseList({
         );
     }
 
+    const chips = (size: "mobile" | "desktop") =>
+        categories.map((name) => {
+            const isActive = name === activeCategory;
+
+            return (
+                <button
+                    key={name}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => setCategory(name)}
+                    className={`shrink-0 border font-medium transition-colors ${
+                        size === "mobile"
+                            ? "h-9 rounded-full px-3.5 text-sm"
+                            : "h-8 rounded-lg px-3 text-[13px]"
+                    } ${
+                        isActive
+                            ? "border-dark bg-dark text-text-on-dark"
+                            : "border-border bg-surface text-text-primary hover:border-border-strong"
+                    }`}
+                >
+                    {name}
+                </button>
+            );
+        });
+
+    const noMatches = (
+        <div className="rounded-2xl border border-dashed border-border-strong bg-surface px-4 py-8 text-center text-sm text-text-secondary">
+            No expenses match your filters.
+        </div>
+    );
+
     return (
         <section>
-            <div className="mb-3 flex items-baseline justify-between gap-4 px-1">
-                <h2 className="text-base font-semibold text-text-primary">
-                    Recent expenses
-                </h2>
+            {/* Mobile: search, chips and rows grouped by day */}
+            <div className="space-y-[18px] md:hidden">
+                <label className="flex h-[46px] items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 text-text-secondary">
+                    <SearchIcon />
+                    <span className="sr-only">Search expenses</span>
+                    <input
+                        type="search"
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
+                        placeholder="Search expenses"
+                        className="min-w-0 flex-1 bg-transparent text-[15px] text-text-primary outline-none"
+                    />
+                </label>
 
-                <p className="shrink-0 text-sm text-text-secondary">
-                    {expenses.length}{" "}
-                    {expenses.length === 1
-                        ? "expense"
-                        : "expenses"}
-                </p>
+                <div className="-mx-4 flex gap-2 overflow-x-auto px-4">
+                    {chips("mobile")}
+                </div>
+
+                {groups.length === 0
+                    ? noMatches
+                    : groups.map((group) => (
+                        <section
+                            key={group.key}
+                            className="space-y-2"
+                        >
+                            <div className="flex items-baseline justify-between px-1">
+                                <h2 className="text-[13px] font-semibold text-text-primary">
+                                    {group.label}{" "}
+                                    <span className="font-normal text-text-secondary">
+                                        · {group.dateLabel}
+                                    </span>
+                                </h2>
+
+                                <p className="tabular text-[13px] text-text-secondary">
+                                    {formatAmount(group.total)}
+                                </p>
+                            </div>
+
+                            <ul className="divide-y divide-surface-muted rounded-2xl border border-border bg-surface">
+                                {group.expenses.map((expense) => {
+                                    const isMenuOpen = openMenuId === expense.id;
+
+                                    return (
+                                        <li
+                                            key={expense.id}
+                                            className="flex items-center gap-3 py-3.5 pl-3.5 pr-2"
+                                        >
+                                            <CategoryIcon expense={expense} />
+
+                                            <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                                                <p className="truncate text-[15px] font-semibold text-text-primary">
+                                                    {expense.description}
+                                                </p>
+
+                                                <p className="truncate text-[13px] text-text-secondary">
+                                                    {expense.categoryName ?? UNCATEGORIZED}
+                                                    {" · "}
+                                                    {formatTime(expense.date)}
+                                                </p>
+                                            </div>
+
+                                            <p className="tabular shrink-0 text-[15px] font-semibold text-text-primary">
+                                                −{formatAmount(expense.amount)}
+                                            </p>
+
+                                            <div
+                                                data-expense-menu
+                                                className="relative shrink-0"
+                                            >
+                                                <button
+                                                    type="button"
+                                                    aria-label={`Actions for ${expense.description}`}
+                                                    aria-haspopup="menu"
+                                                    aria-expanded={isMenuOpen}
+                                                    onClick={() =>
+                                                        setOpenMenuId(
+                                                            isMenuOpen ? null : expense.id
+                                                        )
+                                                    }
+                                                    className="flex h-11 w-8 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-surface-muted hover:text-text-primary"
+                                                >
+                                                    <svg
+                                                        aria-hidden="true"
+                                                        viewBox="0 0 24 24"
+                                                        className="h-[18px] w-[18px]"
+                                                        fill="currentColor"
+                                                    >
+                                                        <circle cx="12" cy="5" r="1.6" />
+                                                        <circle cx="12" cy="12" r="1.6" />
+                                                        <circle cx="12" cy="19" r="1.6" />
+                                                    </svg>
+                                                </button>
+
+                                                {isMenuOpen && (
+                                                    <div
+                                                        role="menu"
+                                                        className="absolute right-0 top-11 z-30 w-40 overflow-hidden rounded-xl border border-border bg-surface shadow-float"
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            role="menuitem"
+                                                            onClick={() => {
+                                                                setOpenMenuId(null);
+                                                                onEdit(expense);
+                                                            }}
+                                                            className="block w-full px-4 py-3 text-left text-sm font-medium text-text-primary transition-colors hover:bg-surface-muted"
+                                                        >
+                                                            Edit expense
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            role="menuitem"
+                                                            onClick={() => {
+                                                                setOpenMenuId(null);
+                                                                onDelete(expense);
+                                                            }}
+                                                            className="block w-full border-t border-border px-4 py-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-surface-muted"
+                                                        >
+                                                            Delete expense
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </section>
+                    ))}
             </div>
 
-            {/* Mobile: compact rows */}
-            <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface md:hidden">
-                {expenses.map((expense) => {
-                    const styles = getCategoryStyles(
-                        expense.categoryName
-                    );
-
-                    return (
-                        <li
-                            key={expense.id}
-                            className="flex gap-3 px-4 py-3.5"
-                        >
-                            <span
-                                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${styles.background} ${styles.color}`}
-                            >
-                                {getExpenseInitial(
-                                    expense.description
-                                )}
-                            </span>
-
-                            <div className="min-w-0 flex-1">
-                                <div className="flex items-baseline justify-between gap-3">
-                                    <p className="truncate text-[15px] font-semibold text-text-primary">
-                                        {expense.description}
-                                    </p>
-
-                                    <p className="tabular shrink-0 text-[15px] font-semibold text-text-primary">
-                                        {formatAmount(expense.amount)}
-                                    </p>
-                                </div>
-
-                                <p className="mt-0.5 truncate text-[13px] text-text-secondary">
-                                    {expense.categoryName
-                                        ? `${expense.categoryName} · `
-                                        : ""}
-                                    {formatDate(expense.date)} · {formatTime(expense.date)}
-                                </p>
-
-                                <div className="-ml-2 mt-1.5 flex gap-1">
-                                    <button
-                                        type="button"
-                                        onClick={() => onEdit(expense)}
-                                        className="h-8 rounded-lg px-2 text-[13px] font-medium text-text-secondary transition-colors hover:bg-surface-muted hover:text-text-primary"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => onDelete(expense)}
-                                        className="h-8 rounded-lg px-2 text-[13px] font-medium text-text-secondary transition-colors hover:bg-red-50 hover:text-red-600"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                    );
-                })}
-            </ul>
-
-            {/* Desktop: table */}
+            {/* Desktop: table card with toolbar */}
             <div className="hidden overflow-hidden rounded-2xl border border-border bg-surface md:block">
-                <div className="overflow-x-auto">
-                    <table className="w-full min-w-[640px] border-collapse text-sm">
-                        <thead>
-                            <tr className="text-left text-xs uppercase tracking-[0.04em] text-text-secondary">
-                                <th scope="col" className="px-6 py-3 font-medium">
-                                    Expense
-                                </th>
-                                <th scope="col" className="px-4 py-3 font-medium">
-                                    Category
-                                </th>
-                                <th scope="col" className="px-4 py-3 font-medium">
-                                    Date
-                                </th>
-                                <th scope="col" className="px-4 py-3 text-right font-medium">
-                                    Amount
-                                </th>
-                                <th scope="col" className="w-36 px-6 py-3">
-                                    <span className="sr-only">Actions</span>
-                                </th>
-                            </tr>
-                        </thead>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-surface-muted px-4 py-3.5">
+                    <div className="flex flex-wrap gap-1.5">
+                        {chips("desktop")}
+                    </div>
 
-                        <tbody>
-                            {expenses.map((expense) => {
-                                const styles = getCategoryStyles(
-                                    expense.categoryName
-                                );
+                    <label className="flex h-9 min-w-[220px] items-center gap-2 rounded-[10px] border border-border px-3 text-text-secondary">
+                        <SearchIcon />
+                        <span className="sr-only">Search expenses</span>
+                        <input
+                            type="search"
+                            value={search}
+                            onChange={(event) => setSearch(event.target.value)}
+                            placeholder="Search expenses"
+                            className="min-w-0 flex-1 bg-transparent text-sm text-text-primary outline-none"
+                        />
+                    </label>
+                </div>
 
-                                return (
-                                    <tr
-                                        key={expense.id}
-                                        className="group border-t border-border transition-colors hover:bg-surface-muted/50"
-                                    >
-                                        <td className="px-6 py-3.5">
-                                            <div className="flex min-w-0 items-center gap-3">
-                                                <span
-                                                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${styles.background} ${styles.color}`}
-                                                >
-                                                    {getExpenseInitial(
-                                                        expense.description
-                                                    )}
-                                                </span>
+                {filtered.length === 0 ? (
+                    <div className="px-4 py-10 text-center text-sm text-text-secondary">
+                        No expenses match your filters.
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[640px] border-collapse text-sm">
+                            <thead>
+                                <tr className="text-left text-xs uppercase tracking-[0.04em] text-text-secondary">
+                                    <th scope="col" className="px-4 py-3 font-medium">
+                                        Expense
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 font-medium">
+                                        Category
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 font-medium">
+                                        Date
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 text-right font-medium">
+                                        Amount
+                                    </th>
+                                    <th scope="col" className="w-36 px-4 py-3">
+                                        <span className="sr-only">Actions</span>
+                                    </th>
+                                </tr>
+                            </thead>
 
-                                                <span className="truncate font-medium text-text-primary">
-                                                    {expense.description}
-                                                </span>
-                                            </div>
-                                        </td>
+                            <tbody>
+                                {filtered.map((expense) => {
+                                    const styles = getCategoryStyles(
+                                        expense.categoryName
+                                    );
 
-                                        <td className="px-4 py-3.5">
-                                            {expense.categoryName ? (
-                                                <span
-                                                    className={`inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-[13px] font-medium text-text-primary ${styles.background}`}
-                                                >
+                                    return (
+                                        <tr
+                                            key={expense.id}
+                                            className="group border-t border-surface-muted transition-colors hover:bg-surface-muted/50"
+                                        >
+                                            <td className="px-4 py-3.5">
+                                                <div className="flex min-w-0 items-center gap-3">
                                                     <span
-                                                        aria-hidden="true"
-                                                        className={`h-1.5 w-1.5 rounded-full ${styles.bar}`}
-                                                    />
-                                                    {expense.categoryName}
-                                                </span>
-                                            ) : (
-                                                <span className="text-text-secondary">
-                                                    Uncategorized
-                                                </span>
-                                            )}
-                                        </td>
+                                                        className={`flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] text-[13px] font-semibold text-text-primary ${styles.background}`}
+                                                    >
+                                                        {getExpenseInitial(
+                                                            expense.description
+                                                        )}
+                                                    </span>
 
-                                        <td className="whitespace-nowrap px-4 py-3.5 text-text-primary">
-                                            {formatDate(expense.date)}
-                                            <span className="text-text-secondary">
+                                                    <span className="truncate font-semibold text-text-primary">
+                                                        {expense.description}
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td className="px-4 py-3.5">
+                                                {expense.categoryName ? (
+                                                    <span
+                                                        className={`inline-flex h-[26px] items-center gap-1.5 rounded-full px-2.5 text-[13px] font-medium text-text-primary ${styles.background}`}
+                                                    >
+                                                        <span
+                                                            aria-hidden="true"
+                                                            className={`h-1.5 w-1.5 rounded-full ${styles.dot}`}
+                                                        />
+                                                        {expense.categoryName}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-text-secondary">
+                                                        {UNCATEGORIZED}
+                                                    </span>
+                                                )}
+                                            </td>
+
+                                            <td className="whitespace-nowrap px-4 py-3.5 text-text-secondary">
+                                                {formatDate(expense.date)}
                                                 {" · "}
                                                 {formatTime(expense.date)}
-                                            </span>
-                                        </td>
+                                            </td>
 
-                                        <td className="tabular whitespace-nowrap px-4 py-3.5 text-right font-semibold text-text-primary">
-                                            {formatAmount(expense.amount)}
-                                        </td>
+                                            <td className="tabular whitespace-nowrap px-4 py-3.5 text-right font-semibold text-text-primary">
+                                                {formatAmount(expense.amount)}
+                                            </td>
 
-                                        <td className="px-6 py-3.5">
-                                            <div className="flex justify-end gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => onEdit(expense)}
-                                                    className="h-8 rounded-lg px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-surface hover:text-text-primary"
-                                                >
-                                                    Edit
-                                                </button>
+                                            <td className="px-4 py-2">
+                                                <div className="flex justify-end gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => onEdit(expense)}
+                                                        className="h-8 rounded-lg px-3 text-[13px] font-medium text-text-secondary transition-colors hover:bg-surface hover:text-text-primary"
+                                                    >
+                                                        Edit
+                                                    </button>
 
-                                                <button
-                                                    type="button"
-                                                    onClick={() => onDelete(expense)}
-                                                    className="h-8 rounded-lg px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-red-50 hover:text-red-600"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => onDelete(expense)}
+                                                        className="h-8 rounded-lg px-3 text-[13px] font-medium text-text-secondary transition-colors hover:bg-red-50 hover:text-red-600"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                <div className="flex items-center justify-between border-t border-surface-muted px-4 py-3 text-[13px] text-text-secondary">
+                    <span>
+                        Showing {filtered.length} of {expenses.length}
+                    </span>
+
+                    <span className="tabular font-semibold text-text-primary">
+                        {formatAmount(filteredTotal)}
+                    </span>
                 </div>
             </div>
         </section>

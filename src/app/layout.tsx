@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: {
-        default: "Trackk · Expense tracker",
-        template: "%s · Trackk",
+        default: "Sika · Expense tracker",
+        template: "%s · Sika",
     },
     description: "Track your spending, organise it by category and see where your money goes.",
 };

@@ -237,7 +237,7 @@ export default function AuthNavbar() {
                         </span>
 
                         <span className="text-[17px] font-semibold tracking-[-0.03em] text-text-primary">
-                            Trackk
+                            Sika
                         </span>
                     </Link>
                 </div>
@@ -334,7 +334,7 @@ export default function AuthNavbar() {
                     </span>
 
                     <span className="text-base font-semibold tracking-[-0.03em] text-text-primary">
-                        Trackk
+                        Sika
                     </span>
                 </Link>
             </header>

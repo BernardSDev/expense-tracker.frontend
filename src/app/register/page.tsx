@@ -79,7 +79,7 @@ export default function RegisterPage() {
                         </span>
 
                         <span className="text-[17px] font-semibold tracking-[-0.03em] text-text-primary">
-                            Trackk
+                            Sika
                         </span>
                     </Link>
                 </header>

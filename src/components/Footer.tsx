@@ -11,7 +11,7 @@ export default function Footer() {
                             >
                                 ₵
                             </span>
-                            Trackk
+                            Sika
                         </p>
                         <p className="mt-1 text-sm text-text-on-dark/60">
                             Take control of your money.
@@ -43,7 +43,7 @@ export default function Footer() {
                 </div>
 
                 <div className="mt-8 flex flex-col gap-2 text-xs text-text-on-dark/50 sm:flex-row sm:items-center sm:justify-between">
-                    <p>© 2026 Trackk. All rights reserved.</p>
+                    <p>© 2026 Sika. All rights reserved.</p>
 
                     <p>Built with simplicity in mind.</p>
                 </div>

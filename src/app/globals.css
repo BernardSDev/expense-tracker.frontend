@@ -28,7 +28,7 @@
     --negative: #b4372f;
     --negative-soft: #fbe4e1;
 
-    /* Category colours (validated set, assigned by category id in fixed order).
+    /* Category colours (8 validated slots, assigned by category id in fixed order).
        base: bars and dots on light surfaces, soft: tiles and pills,
        strong: text and icons on soft, on-dark: bars on the dark card */
     --category-1: #9bb520; /* lime */
@@ -60,6 +60,16 @@
     --category-6-soft: #fbe2ed;
     --category-6-strong: #9b2f5f;
     --category-6-on-dark: #d1588f;
+
+    --category-7: #b0802a; /* ochre */
+    --category-7-soft: #f8ecd2;
+    --category-7-strong: #7a5410;
+    --category-7-on-dark: #b0802a;
+
+    --category-8: #2f8fc9; /* sky */
+    --category-8-soft: #dcedf8;
+    --category-8-strong: #1b5f8a;
+    --category-8-on-dark: #2f8fc9;
 }
 
 @theme inline {
@@ -118,6 +128,16 @@
     --color-category-6-soft: var(--category-6-soft);
     --color-category-6-strong: var(--category-6-strong);
     --color-category-6-on-dark: var(--category-6-on-dark);
+
+    --color-category-7: var(--category-7);
+    --color-category-7-soft: var(--category-7-soft);
+    --color-category-7-strong: var(--category-7-strong);
+    --color-category-7-on-dark: var(--category-7-on-dark);
+
+    --color-category-8: var(--category-8);
+    --color-category-8-soft: var(--category-8-soft);
+    --color-category-8-strong: var(--category-8-strong);
+    --color-category-8-on-dark: var(--category-8-on-dark);
 
     --shadow-card: 0 1px 2px rgba(29, 35, 24, 0.04), 0 1px 3px rgba(29, 35, 24, 0.03);
     --shadow-float: 0 8px 24px rgba(29, 35, 24, 0.16);

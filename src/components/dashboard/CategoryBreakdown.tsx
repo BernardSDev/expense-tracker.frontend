@@ -9,13 +9,15 @@ import {
 
 export type CategoryTotal = {
     key: string;
+    /** Fixed position in the split bar, so neighbours are always palette neighbours */
+    order: number;
     name: string;
     total: number;
     count: number;
     styles: CategoryStyles;
 };
 
-const MAX_SEGMENTS = 5;
+const MAX_SEGMENTS = 7;
 
 const OTHER_STYLES: CategoryStyles = {
     background: "bg-surface-muted",
@@ -26,8 +28,8 @@ const OTHER_STYLES: CategoryStyles = {
 };
 
 /**
- * Totals per category, largest first. Anything past the top five folds
- * into "Other" so the bar never needs a seventh colour.
+ * Totals per category, largest first. Anything past the top seven folds
+ * into "Other" so the bar never needs a ninth colour.
  */
 export function getCategoryTotals(expenses: Expense[]): CategoryTotal[] {
     const totals = new Map<string, CategoryTotal>();
@@ -47,6 +49,7 @@ export function getCategoryTotals(expenses: Expense[]): CategoryTotal[] {
 
         totals.set(key, {
             key,
+            order: expense.categoryId ?? Number.MAX_SAFE_INTEGER - 1,
             name: expense.categoryName ?? "Uncategorized",
             total: expense.amount,
             count: 1,
@@ -66,6 +69,7 @@ export function getCategoryTotals(expenses: Expense[]): CategoryTotal[] {
         ...sorted.slice(0, MAX_SEGMENTS),
         {
             key: "other",
+            order: Number.MAX_SAFE_INTEGER,
             name: `Other (${rest.length})`,
             total: rest.reduce((sum, category) => sum + category.total, 0),
             count: rest.reduce((sum, category) => sum + category.count, 0),
@@ -96,7 +100,7 @@ export function CategoryBar({
             aria-hidden="true"
             className={`flex origin-left gap-[2px] overflow-hidden rounded-full motion-safe:animate-grow-x ${className}`}
         >
-            {categories.map((category) => (
+            {[...categories].sort((a, b) => a.order - b.order).map((category) => (
                 <div
                     key={category.key}
                     className={`h-full first:rounded-l-full last:rounded-r-full ${

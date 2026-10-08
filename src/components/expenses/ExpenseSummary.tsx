@@ -86,7 +86,13 @@ function ExpenseSummary({
             className="flex h-2 origin-left gap-[3px] overflow-hidden rounded-full motion-safe:animate-grow-x"
             aria-hidden="true"
         >
-            {categoryTotals.map((category) => {
+            {[...categoryTotals]
+                .sort(
+                    (a, b) =>
+                        (a.categoryId ?? Number.MAX_SAFE_INTEGER) -
+                        (b.categoryId ?? Number.MAX_SAFE_INTEGER)
+                )
+                .map((category) => {
                 const styles = getCategoryStyles(category.categoryName, category.categoryId);
 
                 return (

@@ -12,7 +12,7 @@ export type CategoryStyles = {
 };
 
 /*
- * Six validated colours (see globals.css), assigned in a fixed order.
+ * Eight validated colours (see globals.css), assigned in a fixed order.
  * A category keeps its colour everywhere because the slot comes from its id,
  * not from its rank, so a filter or a new expense never repaints it.
  * Class names are written out in full so Tailwind can find them.
@@ -59,6 +59,20 @@ const CATEGORY_SLOTS: CategoryStyles[] = [
         bar: "bg-category-6",
         barOnDark: "bg-category-6-on-dark",
         dot: "bg-category-6",
+    },
+    {
+        background: "bg-category-7-soft",
+        color: "text-category-7-strong",
+        bar: "bg-category-7",
+        barOnDark: "bg-category-7-on-dark",
+        dot: "bg-category-7",
+    },
+    {
+        background: "bg-category-8-soft",
+        color: "text-category-8-strong",
+        bar: "bg-category-8",
+        barOnDark: "bg-category-8-on-dark",
+        dot: "bg-category-8",
     },
 ];
 

@@ -12,6 +12,7 @@ import {
 
 import { getCategoryStyles } from "./categoryStyles";
 import EmptyState from "@/components/ui/EmptyState";
+import SwipeRow from "@/components/ui/SwipeRow";
 
 type ExpenseListProps = {
     expenses: Expense[];
@@ -171,6 +172,7 @@ function ExpenseList({
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState(ALL);
     const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+    const [swipedId, setSwipedId] = useState<number | null>(null);
 
     // Row animations: remember which expenses were already shown, so new ones
     // can be highlighted and deleted ones can fade out instead of vanishing.
@@ -306,6 +308,22 @@ function ExpenseList({
         (total, expense) => total + expense.amount,
         0
     );
+
+    useEffect(() => {
+        if (swipedId === null) {
+            return;
+        }
+
+        function handlePointerDown(event: PointerEvent) {
+            if (!(event.target as Element).closest("[data-swipe-open]")) {
+                setSwipedId(null);
+            }
+        }
+
+        document.addEventListener("pointerdown", handlePointerDown);
+
+        return () => document.removeEventListener("pointerdown", handlePointerDown);
+    }, [swipedId]);
 
     useEffect(() => {
         if (openMenuId === null) {
@@ -502,9 +520,55 @@ function ExpenseList({
                                     const isMenuOpen = openMenuId === expense.id;
 
                                     return (
-                                        <li
+                                        <SwipeRow
                                             key={expense.id}
-                                            className={`flex items-center gap-3 py-3.5 pl-3.5 pr-2 first:rounded-t-2xl last:rounded-b-2xl ${getRowAnimation(expense.id)}`}
+                                            isOpen={swipedId === expense.id}
+                                            onOpenChange={(open) =>
+                                                setSwipedId(open ? expense.id : null)
+                                            }
+                                            className={`first:rounded-t-2xl last:rounded-b-2xl ${getRowAnimation(expense.id)}`}
+                                            contentClassName="flex items-center gap-3 py-3.5 pl-3.5 pr-2"
+                                            actions={[
+                                                {
+                                                    label: "Edit",
+                                                    tone: "neutral",
+                                                    onClick: () => onEdit(expense),
+                                                    icon: (
+                                                        <svg
+                                                            aria-hidden="true"
+                                                            viewBox="0 0 24 24"
+                                                            className="h-5 w-5"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="1.8"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z" />
+                                                            <path d="M13.5 6.5l3 3" />
+                                                        </svg>
+                                                    ),
+                                                },
+                                                {
+                                                    label: "Delete",
+                                                    tone: "danger",
+                                                    onClick: () => onDelete(expense),
+                                                    icon: (
+                                                        <svg
+                                                            aria-hidden="true"
+                                                            viewBox="0 0 24 24"
+                                                            className="h-5 w-5"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="1.8"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+                                                        </svg>
+                                                    ),
+                                                },
+                                            ]}
                                         >
                                             <CategoryIcon expense={expense} />
 
@@ -553,7 +617,7 @@ function ExpenseList({
                                                 </button>
 
                                             </div>
-                                        </li>
+                                        </SwipeRow>
                                     );
                                 })}
                             </ul>

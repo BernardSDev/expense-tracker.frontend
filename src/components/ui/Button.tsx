@@ -12,7 +12,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     secondary:
         "border border-border bg-surface text-text-primary hover:border-border-strong hover:bg-surface-muted",
     danger:
-        "bg-red-600 text-white hover:bg-red-700",
+        "bg-negative text-white hover:bg-negative/90",
 };
 
 function Button({

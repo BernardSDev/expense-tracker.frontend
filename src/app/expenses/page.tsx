@@ -99,31 +99,33 @@ export default function ExpensesPage() {
 
                 <main className="lg:pl-60">
                     <div className="mx-auto max-w-7xl px-4 pb-44 pt-5 sm:px-6 sm:pt-8 lg:px-10 lg:pb-12 lg:pt-10">
-                        <ExpenseHeader
-                            onAddExpense={
-                                handleAddExpense
-                            }
-                            onManageCategories={
-                                handleManageCategories
-                            }
-                        />
+                        <div className="stagger">
+                            <ExpenseHeader
+                                onAddExpense={
+                                    handleAddExpense
+                                }
+                                onManageCategories={
+                                    handleManageCategories
+                                }
+                            />
 
-                        <ExpenseSummary
-                            expenses={expenses}
-                            isLoading={isLoading}
-                        />
+                            <ExpenseSummary
+                                expenses={expenses}
+                                isLoading={isLoading}
+                            />
 
-                        <ExpenseList
-                            expenses={expenses}
-                            isLoading={isLoading}
-                            error={error}
-                            onRetry={refetch}
-                            onAddExpense={
-                                handleAddExpense
-                            }
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                        />
+                            <ExpenseList
+                                expenses={expenses}
+                                isLoading={isLoading}
+                                error={error}
+                                onRetry={refetch}
+                                onAddExpense={
+                                    handleAddExpense
+                                }
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                            />
+                        </div>
 
                         {/* Add expense */}
                         <Modal

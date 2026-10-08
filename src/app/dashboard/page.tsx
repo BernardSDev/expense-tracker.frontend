@@ -12,6 +12,7 @@ import CategoryBreakdown, {
 import SpendingChart from "@/components/dashboard/SpendingChart";
 import AddExpenseForm from "@/components/expenses/AddExpenseForm";
 import { getCategoryStyles } from "@/components/expenses/categoryStyles";
+import AnimatedNumber from "@/components/ui/AnimatedNumber";
 import Modal from "@/components/ui/Modal";
 import PageHeader from "@/components/ui/PageHeader";
 import StatLabel from "@/components/ui/StatLabel";
@@ -128,7 +129,7 @@ export default function DashboardPage() {
             <AuthNavbar />
 
             <main className="min-h-screen bg-background lg:pl-60">
-                <div className="mx-auto max-w-7xl px-4 pb-28 pt-5 sm:px-6 sm:pt-8 lg:px-10 lg:pb-12 lg:pt-10">
+                <div className="stagger mx-auto max-w-7xl px-4 pb-28 pt-5 sm:px-6 sm:pt-8 lg:px-10 lg:pb-12 lg:pt-10">
                     {/* Header */}
                     <PageHeader
                         eyebrow={now.toLocaleDateString("en-GB", {
@@ -187,7 +188,7 @@ export default function DashboardPage() {
                     )}
 
                     {/* Stats */}
-                    <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+                    <section className="stagger grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                         <div className="col-span-2 rounded-2xl bg-dark p-5 text-text-on-dark lg:col-span-1">
                             {isLoading ? (
                                 <StatSkeleton dark />
@@ -198,7 +199,7 @@ export default function DashboardPage() {
                                     </StatLabel>
 
                                     <p className="tabular mt-3 text-[30px] font-semibold leading-tight tracking-[-0.03em]">
-                                        {formatAmount(monthTotal)}
+                                        <AnimatedNumber value={monthTotal} format={formatAmount} />
                                     </p>
 
                                     <p className="mt-2 text-[13px] text-text-muted">
@@ -268,7 +269,7 @@ export default function DashboardPage() {
                                     </StatLabel>
 
                                     <p className="tabular mt-2 text-2xl font-semibold tracking-[-0.03em] text-text-primary sm:text-[28px]">
-                                        {thisMonthExpenses.length}
+                                        <AnimatedNumber value={thisMonthExpenses.length} duration={500} />
                                     </p>
 
                                     <p className="mt-1 text-[13px] text-text-secondary">
@@ -288,7 +289,7 @@ export default function DashboardPage() {
                                     </StatLabel>
 
                                     <p className="tabular mt-2 truncate text-2xl font-semibold tracking-[-0.03em] text-text-primary sm:text-[28px]">
-                                        {formatAmount(dailyAverage)}
+                                        <AnimatedNumber value={dailyAverage} format={formatAmount} />
                                     </p>
 
                                     <p className="mt-1 text-[13px] text-text-secondary">

@@ -93,7 +93,7 @@ export function CategoryBar({
     return (
         <div
             aria-hidden="true"
-            className={`flex gap-[2px] overflow-hidden rounded-full ${className}`}
+            className={`flex origin-left gap-[2px] overflow-hidden rounded-full motion-safe:animate-grow-x ${className}`}
         >
             {categories.map((category) => (
                 <div

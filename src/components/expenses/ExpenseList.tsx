@@ -22,6 +22,11 @@ type ExpenseListProps = {
     onDelete: (expense: Expense) => void;
 };
 
+type LeavingExpense = {
+    expense: Expense;
+    index: number;
+};
+
 type ExpenseGroup = {
     key: string;
     label: string;
@@ -166,6 +171,92 @@ function ExpenseList({
     const [category, setCategory] = useState(ALL);
     const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
+    // Row animations: remember which expenses were already shown, so new ones
+    // can be highlighted and deleted ones can fade out instead of vanishing.
+    const [previousExpenses, setPreviousExpenses] = useState(expenses);
+    const [seenIds, setSeenIds] = useState<Set<number> | null>(null);
+    const [newIds, setNewIds] = useState<number[]>([]);
+    const [leaving, setLeaving] = useState<LeavingExpense[]>([]);
+
+    if (seenIds === null) {
+        if (!isLoading && !error) {
+            setSeenIds(new Set(expenses.map((expense) => expense.id)));
+            setPreviousExpenses(expenses);
+        }
+    } else if (expenses !== previousExpenses) {
+        const currentIds = new Set(expenses.map((expense) => expense.id));
+
+        const added = expenses
+            .filter((expense) => !seenIds.has(expense.id))
+            .map((expense) => expense.id);
+
+        const removed = previousExpenses
+            .map((expense, index) => ({ expense, index }))
+            .filter(({ expense }) => !currentIds.has(expense.id));
+
+        setPreviousExpenses(expenses);
+
+        if (added.length > 0) {
+            setSeenIds(new Set([...seenIds, ...added]));
+            setNewIds((ids) => [...ids, ...added]);
+        }
+
+        if (removed.length > 0) {
+            setLeaving((rows) => [...rows, ...removed]);
+        }
+    }
+
+    useEffect(() => {
+        if (newIds.length === 0) {
+            return;
+        }
+
+        const timeout = setTimeout(() => setNewIds([]), 1700);
+
+        return () => clearTimeout(timeout);
+    }, [newIds]);
+
+    useEffect(() => {
+        if (leaving.length === 0) {
+            return;
+        }
+
+        const timeout = setTimeout(() => setLeaving([]), 300);
+
+        return () => clearTimeout(timeout);
+    }, [leaving]);
+
+    const leavingIds = useMemo(
+        () => new Set(leaving.map(({ expense }) => expense.id)),
+        [leaving]
+    );
+
+    const displayExpenses = useMemo(() => {
+        const merged = [...expenses];
+
+        for (const { expense, index } of [...leaving].sort(
+            (a, b) => a.index - b.index
+        )) {
+            if (!merged.some((item) => item.id === expense.id)) {
+                merged.splice(Math.min(index, merged.length), 0, expense);
+            }
+        }
+
+        return merged;
+    }, [expenses, leaving]);
+
+    function getRowAnimation(id: number) {
+        if (leavingIds.has(id)) {
+            return "pointer-events-none overflow-hidden motion-safe:animate-row-out";
+        }
+
+        if (newIds.includes(id)) {
+            return "motion-safe:animate-row-new";
+        }
+
+        return "";
+    }
+
     const categories = useMemo(() => {
         const names = new Set<string>();
 
@@ -181,7 +272,7 @@ function ExpenseList({
     const filtered = useMemo(() => {
         const query = search.trim().toLowerCase();
 
-        return expenses.filter((expense) => {
+        return displayExpenses.filter((expense) => {
             const name = expense.categoryName ?? UNCATEGORIZED;
 
             if (activeCategory !== ALL && name !== activeCategory) {
@@ -197,7 +288,7 @@ function ExpenseList({
                 name.toLowerCase().includes(query)
             );
         });
-    }, [expenses, search, activeCategory]);
+    }, [displayExpenses, search, activeCategory]);
 
     const groups = useMemo(() => groupByDay(filtered), [filtered]);
 
@@ -206,7 +297,11 @@ function ExpenseList({
             ? null
             : expenses.find((expense) => expense.id === openMenuId) ?? null;
 
-    const filteredTotal = filtered.reduce(
+    const visibleExpenses = filtered.filter(
+        (expense) => !leavingIds.has(expense.id)
+    );
+
+    const filteredTotal = visibleExpenses.reduce(
         (total, expense) => total + expense.amount,
         0
     );
@@ -394,7 +489,7 @@ function ExpenseList({
                                     return (
                                         <li
                                             key={expense.id}
-                                            className="flex items-center gap-3 py-3.5 pl-3.5 pr-2"
+                                            className={`flex items-center gap-3 py-3.5 pl-3.5 pr-2 first:rounded-t-2xl last:rounded-b-2xl ${getRowAnimation(expense.id)}`}
                                         >
                                             <CategoryIcon expense={expense} />
 
@@ -611,7 +706,7 @@ function ExpenseList({
                                     return (
                                         <tr
                                             key={expense.id}
-                                            className="group border-t border-surface-muted transition-colors hover:bg-surface-muted/50"
+                                            className={`group border-t border-surface-muted transition-colors hover:bg-surface-muted/50 ${getRowAnimation(expense.id)}`}
                                         >
                                             <td className="px-4 py-3.5">
                                                 <div className="flex min-w-0 items-center gap-3">
@@ -686,7 +781,7 @@ function ExpenseList({
 
                 <div className="flex items-center justify-between border-t border-surface-muted px-4 py-3 text-[13px] text-text-secondary">
                     <span>
-                        Showing {filtered.length} of {expenses.length}
+                        Showing {visibleExpenses.length} of {expenses.length}
                     </span>
 
                     <span className="tabular font-semibold text-text-primary">

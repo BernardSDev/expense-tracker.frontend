@@ -103,8 +103,11 @@ export default function SpendingChart({
                                 >
                                     {day.total > 0 ? (
                                         <div
-                                            className="w-full rounded-t-[4px] bg-dark transition-colors group-hover:bg-dark-surface"
-                                            style={{ height: `${height}%` }}
+                                            className="w-full origin-bottom rounded-t-[4px] bg-dark transition-colors group-hover:bg-dark-surface motion-safe:animate-grow-up"
+                                            style={{
+                                                height: `${height}%`,
+                                                animationDelay: `${index * 35}ms`,
+                                            }}
                                         />
                                     ) : (
                                         <div className="h-[2px] w-full rounded-full bg-surface-muted" />

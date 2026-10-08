@@ -5,6 +5,7 @@ import {formatAmount, formatDate} from "@/utils/expenses";
 
 import {getCategoryStyles} from "./categoryStyles";
 import StatLabel from "@/components/ui/StatLabel";
+import AnimatedNumber from "@/components/ui/AnimatedNumber";
 
 type ExpenseSummaryProps = {
     expenses: Expense[];
@@ -82,7 +83,7 @@ function ExpenseSummary({
 
     const categoryBar = (variant: "dark" | "light") => (
         <div
-            className="flex h-2 gap-[3px] overflow-hidden rounded-full"
+            className="flex h-2 origin-left gap-[3px] overflow-hidden rounded-full motion-safe:animate-grow-x"
             aria-hidden="true"
         >
             {categoryTotals.map((category) => {
@@ -102,7 +103,7 @@ function ExpenseSummary({
     );
 
     return (
-        <section className="mb-[18px] grid gap-4 sm:mb-6 sm:grid-cols-3">
+        <section className="stagger mb-[18px] grid gap-4 sm:mb-6 sm:grid-cols-3">
             {/* Total spending */}
             <div className="flex flex-col gap-4 rounded-2xl bg-dark p-5 text-text-on-dark sm:gap-2">
                 <div className="flex items-start justify-between gap-3">
@@ -113,7 +114,7 @@ function ExpenseSummary({
                         </StatLabel>
 
                         <p className="tabular text-[32px] font-semibold leading-tight tracking-[-0.03em] sm:text-[28px]">
-                            {formatAmount(totalExpenses)}
+                            <AnimatedNumber value={totalExpenses} format={formatAmount} />
                         </p>
                     </div>
 
@@ -160,7 +161,7 @@ function ExpenseSummary({
                 </StatLabel>
 
                 <p className="tabular text-[28px] font-semibold leading-tight tracking-[-0.03em] text-text-primary">
-                    {formatAmount(largestExpense?.amount ?? 0)}
+                    <AnimatedNumber value={largestExpense?.amount ?? 0} format={formatAmount} />
                 </p>
 
                 <p className="truncate text-[13px] text-text-secondary">

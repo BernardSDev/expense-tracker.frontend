@@ -226,7 +226,7 @@ export default function CategoryManager({
                                 isSubmitting ||
                                 !name.trim()
                             }
-                            className="shrink-0 bg-dark px-5 py-3 text-sm font-semibold text-text-on-dark transition-colors hover:bg-dark-surface disabled:cursor-not-allowed disabled:opacity-50"
+                            className="shrink-0 bg-dark px-5 py-3 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {isSubmitting
                                 ? "Saving..."

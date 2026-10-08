@@ -13,6 +13,8 @@ import SpendingChart from "@/components/dashboard/SpendingChart";
 import AddExpenseForm from "@/components/expenses/AddExpenseForm";
 import { getCategoryStyles } from "@/components/expenses/categoryStyles";
 import Modal from "@/components/ui/Modal";
+import PageHeader from "@/components/ui/PageHeader";
+import StatLabel from "@/components/ui/StatLabel";
 
 import { useExpensesQuery } from "@/queries/expenses";
 import { Expense } from "@/types/expense";
@@ -125,54 +127,48 @@ export default function DashboardPage() {
         <ProtectedRoute>
             <AuthNavbar />
 
-            <main className="min-h-screen bg-background">
-                <div className="mx-auto max-w-7xl px-4 pb-28 pt-5 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8">
+            <main className="min-h-screen bg-background lg:pl-60">
+                <div className="mx-auto max-w-7xl px-4 pb-28 pt-5 sm:px-6 sm:pt-8 lg:px-10 lg:pb-12 lg:pt-10">
                     {/* Header */}
-                    <header className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
-                        <div>
-                            <p className="text-[13px] font-medium text-text-secondary">
-                                {now.toLocaleDateString("en-GB", {
-                                    weekday: "long",
-                                    day: "numeric",
-                                    month: "long",
-                                    year: "numeric",
-                                })}
-                            </p>
-
-                            <h1 className="mt-1 text-[26px] font-semibold tracking-[-0.02em] text-text-primary sm:text-[30px]">
-                                {getGreeting(now.getHours())}
-                                {username ? `, ${username}` : ""}.
-                            </h1>
-                        </div>
-
-                        <div className="flex gap-2.5">
-                            <Link
-                                href="/expenses"
-                                className="inline-flex h-10 flex-1 items-center justify-center rounded-xl border border-border bg-surface px-4 text-sm font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-muted sm:flex-none"
-                            >
-                                View expenses
-                            </Link>
-
-                            <button
-                                type="button"
-                                onClick={() => setIsAddOpen(true)}
-                                className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-dark px-4 text-sm font-semibold text-text-on-dark transition-colors hover:bg-dark-surface sm:flex-none"
-                            >
-                                <svg
-                                    aria-hidden="true"
-                                    viewBox="0 0 24 24"
-                                    className="h-4 w-4 text-accent"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2.2"
-                                    strokeLinecap="round"
+                    <PageHeader
+                        eyebrow={now.toLocaleDateString("en-GB", {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                        })}
+                        title={`${getGreeting(now.getHours())}${username ? `, ${username}` : ""}.`}
+                        description="Here's how your spending looks this month."
+                        actions={
+                            <>
+                                <Link
+                                    href="/expenses"
+                                    className="inline-flex h-10 flex-1 items-center justify-center rounded-[10px] border border-border bg-surface px-4 text-sm font-semibold text-text-primary transition-colors hover:border-border-strong hover:bg-surface-muted sm:flex-none"
                                 >
-                                    <path d="M12 5v14M5 12h14" />
-                                </svg>
-                                Add expense
-                            </button>
-                        </div>
-                    </header>
+                                    View expenses
+                                </Link>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setIsAddOpen(true)}
+                                    className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[10px] bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] sm:flex-none"
+                                >
+                                    <svg
+                                        aria-hidden="true"
+                                        viewBox="0 0 24 24"
+                                        className="h-4 w-4 text-accent"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2.2"
+                                        strokeLinecap="round"
+                                    >
+                                        <path d="M12 5v14M5 12h14" />
+                                    </svg>
+                                    Add expense
+                                </button>
+                            </>
+                        }
+                    />
 
                     {error && (
                         <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -183,7 +179,7 @@ export default function DashboardPage() {
                             <button
                                 type="button"
                                 onClick={() => refetch()}
-                                className="h-9 shrink-0 rounded-lg bg-dark px-4 text-sm font-semibold text-text-on-dark transition-colors hover:bg-dark-surface"
+                                className="h-9 shrink-0 rounded-lg bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
                             >
                                 Try again
                             </button>
@@ -192,16 +188,16 @@ export default function DashboardPage() {
 
                     {/* Stats */}
                     <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-                        <div className="col-span-2 rounded-[20px] bg-dark p-5 text-text-on-dark sm:rounded-2xl lg:col-span-1">
+                        <div className="col-span-2 rounded-2xl bg-dark p-5 text-text-on-dark lg:col-span-1">
                             {isLoading ? (
                                 <StatSkeleton dark />
                             ) : (
                                 <>
-                                    <p className="text-[13px] text-text-muted">
+                                    <StatLabel icon="wallet" tone="dark">
                                         Spent in {monthName}
-                                    </p>
+                                    </StatLabel>
 
-                                    <p className="tabular mt-2 text-[30px] font-semibold leading-tight tracking-[-0.03em]">
+                                    <p className="tabular mt-3 text-[30px] font-semibold leading-tight tracking-[-0.03em]">
                                         {formatAmount(monthTotal)}
                                     </p>
 
@@ -262,14 +258,14 @@ export default function DashboardPage() {
                             )}
                         </div>
 
-                        <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
+                        <div className="rounded-2xl border border-border bg-surface shadow-card p-4 sm:p-5">
                             {isLoading ? (
                                 <StatSkeleton />
                             ) : (
                                 <>
-                                    <p className="text-[13px] text-text-secondary">
+                                    <StatLabel icon="receipt">
                                         Expenses
-                                    </p>
+                                    </StatLabel>
 
                                     <p className="tabular mt-2 text-2xl font-semibold tracking-[-0.03em] text-text-primary sm:text-[28px]">
                                         {thisMonthExpenses.length}
@@ -282,14 +278,14 @@ export default function DashboardPage() {
                             )}
                         </div>
 
-                        <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
+                        <div className="rounded-2xl border border-border bg-surface shadow-card p-4 sm:p-5">
                             {isLoading ? (
                                 <StatSkeleton />
                             ) : (
                                 <>
-                                    <p className="text-[13px] text-text-secondary">
+                                    <StatLabel icon="calendar">
                                         Daily average
-                                    </p>
+                                    </StatLabel>
 
                                     <p className="tabular mt-2 truncate text-2xl font-semibold tracking-[-0.03em] text-text-primary sm:text-[28px]">
                                         {formatAmount(dailyAverage)}
@@ -302,14 +298,14 @@ export default function DashboardPage() {
                             )}
                         </div>
 
-                        <div className="col-span-2 rounded-2xl border border-border bg-surface p-4 sm:p-5 lg:col-span-1">
+                        <div className="col-span-2 rounded-2xl border border-border bg-surface shadow-card p-4 sm:p-5 lg:col-span-1">
                             {isLoading ? (
                                 <StatSkeleton />
                             ) : (
                                 <>
-                                    <p className="text-[13px] text-text-secondary">
+                                    <StatLabel icon="tag">
                                         Top category
-                                    </p>
+                                    </StatLabel>
 
                                     <p className="mt-2 truncate text-2xl font-semibold tracking-[-0.03em] text-text-primary sm:text-[28px]">
                                         {topCategory ? topCategory.name : "None yet"}
@@ -327,7 +323,7 @@ export default function DashboardPage() {
 
                     {/* Charts */}
                     <section className="mt-4 grid gap-4 lg:grid-cols-5">
-                        <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6 lg:col-span-3">
+                        <div className="rounded-2xl border border-border bg-surface shadow-card p-5 sm:p-6 lg:col-span-3">
                             {isLoading ? (
                                 <div className="h-60 animate-pulse rounded-xl bg-surface-muted" />
                             ) : (
@@ -335,7 +331,7 @@ export default function DashboardPage() {
                             )}
                         </div>
 
-                        <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6 lg:col-span-2">
+                        <div className="rounded-2xl border border-border bg-surface shadow-card p-5 sm:p-6 lg:col-span-2">
                             {isLoading ? (
                                 <div className="h-60 animate-pulse rounded-xl bg-surface-muted" />
                             ) : (
@@ -345,7 +341,7 @@ export default function DashboardPage() {
                     </section>
 
                     {/* Recent expenses */}
-                    <section className="mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
+                    <section className="mt-4 overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
                         <div className="flex items-center justify-between gap-4 px-5 pb-3 pt-5 sm:px-6">
                             <div>
                                 <h2 className="text-base font-semibold text-text-primary">

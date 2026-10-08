@@ -4,6 +4,7 @@ import {Expense} from "@/types/expense";
 import {formatAmount, formatDate} from "@/utils/expenses";
 
 import {getCategoryStyles} from "./categoryStyles";
+import StatLabel from "@/components/ui/StatLabel";
 
 type ExpenseSummaryProps = {
     expenses: Expense[];
@@ -68,7 +69,7 @@ function ExpenseSummary({
                 {[0, 1].map((item) => (
                     <div
                         key={item}
-                        className="hidden animate-pulse rounded-2xl border border-border bg-surface p-6 sm:block"
+                        className="hidden animate-pulse rounded-2xl border border-border bg-surface shadow-card p-6 sm:block"
                     >
                         <div className="h-4 w-28 rounded bg-surface-muted" />
                         <div className="mt-4 h-9 w-32 rounded bg-surface-muted" />
@@ -103,13 +104,13 @@ function ExpenseSummary({
     return (
         <section className="mb-[18px] grid gap-4 sm:mb-6 sm:grid-cols-3">
             {/* Total spending */}
-            <div className="flex flex-col gap-4 rounded-[20px] bg-dark p-5 text-text-on-dark sm:gap-2 sm:rounded-2xl">
+            <div className="flex flex-col gap-4 rounded-2xl bg-dark p-5 text-text-on-dark sm:gap-2">
                 <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 flex-col gap-1.5 sm:gap-2">
-                        <p className="text-[13px] text-text-muted">
-                            <span className="sm:hidden">Total spent this month</span>
+                        <StatLabel icon="wallet" tone="dark">
+                            <span className="sm:hidden">Spent this month</span>
                             <span className="hidden sm:inline">Total spent</span>
-                        </p>
+                        </StatLabel>
 
                         <p className="tabular text-[32px] font-semibold leading-tight tracking-[-0.03em] sm:text-[28px]">
                             {formatAmount(totalExpenses)}
@@ -153,10 +154,10 @@ function ExpenseSummary({
             </div>
 
             {/* Largest expense */}
-            <div className="hidden flex-col gap-2 rounded-2xl border border-border bg-surface p-5 sm:flex">
-                <p className="text-[13px] text-text-secondary">
+            <div className="hidden flex-col gap-2 rounded-2xl border border-border bg-surface shadow-card p-5 sm:flex">
+                <StatLabel icon="trophy">
                     Largest expense
-                </p>
+                </StatLabel>
 
                 <p className="tabular text-[28px] font-semibold leading-tight tracking-[-0.03em] text-text-primary">
                     {formatAmount(largestExpense?.amount ?? 0)}
@@ -170,10 +171,10 @@ function ExpenseSummary({
             </div>
 
             {/* By category */}
-            <div className="hidden flex-col gap-3 rounded-2xl border border-border bg-surface p-5 sm:flex">
-                <p className="text-[13px] text-text-secondary">
+            <div className="hidden flex-col gap-3 rounded-2xl border border-border bg-surface shadow-card p-5 sm:flex">
+                <StatLabel icon="pie">
                     By category
-                </p>
+                </StatLabel>
 
                 {totalExpenses > 0 ? (
                     <>

@@ -27,9 +27,21 @@ export default function ProtectedRoute({
     if (isChecking) {
         return (
             <main className="flex min-h-screen items-center justify-center bg-background">
-                <p className="text-sm text-text-secondary">
-                    Loading...
-                </p>
+                <div
+                    role="status"
+                    className="flex flex-col items-center gap-3"
+                >
+                    <span
+                        aria-hidden="true"
+                        className="flex h-10 w-10 animate-pulse items-center justify-center rounded-xl bg-dark text-lg font-bold text-accent"
+                    >
+                        ₵
+                    </span>
+
+                    <p className="text-sm text-text-secondary">
+                        Loading your workspace…
+                    </p>
+                </div>
             </main>
         );
     }

@@ -11,9 +11,18 @@ export default function Home() {
                     <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
                         <Link
                             href="/"
-                            className="text-lg font-semibold tracking-tight"
+                            className="flex items-center gap-2.5"
                         >
-                            ExpenseTracker
+                            <span
+                                aria-hidden="true"
+                                className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-dark text-[15px] font-bold text-accent"
+                            >
+                                ₵
+                            </span>
+
+                            <span className="text-[17px] font-semibold tracking-[-0.03em] text-text-primary">
+                                Trackk
+                            </span>
                         </Link>
 
                         <div className="flex items-center gap-3">
@@ -26,7 +35,7 @@ export default function Home() {
 
                             <Link
                                 href="/register"
-                                className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-text-primary transition hover:bg-accent-hover"
+                                className="inline-flex h-10 items-center rounded-[10px] bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
                             >
                                 Get started
                             </Link>
@@ -61,7 +70,7 @@ export default function Home() {
                             <div className="mt-9 flex flex-wrap items-center gap-4">
                                 <Link
                                     href="/register"
-                                    className="rounded-full bg-text-primary px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-black"
+                                    className="inline-flex h-12 items-center justify-center rounded-[10px] bg-dark px-6 text-[15px] font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
                                 >
                                     Start tracking
                                     <span className="ml-2">→</span>
@@ -69,7 +78,7 @@ export default function Home() {
 
                                 <Link
                                     href="/login"
-                                    className="rounded-full border border-border-strong bg-surface px-6 py-3.5 text-sm font-semibold text-text-primary transition hover:bg-surface-muted"
+                                    className="inline-flex h-12 items-center justify-center rounded-[10px] border border-border bg-surface px-6 text-[15px] font-semibold text-text-primary shadow-card transition-colors hover:border-border-strong hover:bg-surface-muted"
                                 >
                                     Sign in
                                 </Link>
@@ -80,7 +89,7 @@ export default function Home() {
                         <div className="relative">
                             <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-accent/20 blur-3xl" />
 
-                            <div className="overflow-hidden rounded-3xl border border-border bg-surface shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+                            <div className="overflow-hidden rounded-3xl border border-border bg-surface shadow-float">
                                 {/* Preview header */}
                                 <div className="flex items-center justify-between border-b border-border px-6 py-5">
                                     <div>
@@ -154,10 +163,10 @@ export default function Home() {
                     </div>
                 </section>
 
-                <section className="bg-dark text-white">
+                <section className="bg-dark text-text-on-dark">
                     <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
                         <div className="max-w-4xl">
-                            <p className="text-sm font-medium uppercase tracking-[0.2em] text-white/50">
+                            <p className="text-sm font-medium uppercase tracking-[0.2em] text-text-on-dark/60">
                                 Built for clarity
                             </p>
 
@@ -167,7 +176,7 @@ export default function Home() {
                                 <span className="text-accent">Your picture.</span>
                             </h2>
 
-                            <p className="mt-8 max-w-2xl text-lg leading-8 text-white/60">
+                            <p className="mt-8 max-w-2xl text-lg leading-8 text-text-on-dark/70">
                                 Everything you need to understand your spending,
                                 organized in one simple place.
                             </p>

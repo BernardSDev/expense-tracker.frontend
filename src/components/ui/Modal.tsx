@@ -44,7 +44,7 @@ export default function Modal({
 
     return (
         <div
-            className="fixed inset-0 z-[60] flex items-end justify-center overflow-y-auto bg-dark/40 backdrop-blur-[2px] sm:items-center sm:px-6 sm:py-10"
+            className="fixed inset-0 z-[60] flex items-end justify-center overflow-y-auto bg-dark/40 backdrop-blur-[2px] motion-safe:animate-fade-in sm:items-center sm:px-6 sm:py-10"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
@@ -54,7 +54,7 @@ export default function Modal({
                 }
             }}
         >
-            <div className="w-full max-w-lg rounded-t-[20px] border border-border bg-surface shadow-float sm:rounded-2xl">
+            <div className="w-full max-w-lg rounded-t-[20px] border border-border bg-surface shadow-float motion-safe:animate-sheet-in sm:rounded-2xl sm:motion-safe:animate-rise-in">
                 <div className="flex items-start justify-between gap-6 px-5 pb-4 pt-5 sm:px-6 sm:pt-6">
                     <div className="min-w-0">
                         <h2

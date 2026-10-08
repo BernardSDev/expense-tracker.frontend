@@ -86,24 +86,33 @@ function LoginPageContent() {
     return (
         <main className="min-h-screen bg-background">
             <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6 lg:px-8">
-                <header className="flex h-20 items-center">
+                <header className="flex h-16 items-center sm:h-20">
                     <Link
                         href="/"
-                        className="text-lg font-semibold tracking-tight text-text-primary"
+                        className="flex items-center gap-2.5"
                     >
-                        ExpenseTracker
+                        <span
+                            aria-hidden="true"
+                            className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-dark text-[15px] font-bold text-accent"
+                        >
+                            ₵
+                        </span>
+
+                        <span className="text-[17px] font-semibold tracking-[-0.03em] text-text-primary">
+                            Trackk
+                        </span>
                     </Link>
                 </header>
 
-                <div className="flex flex-1 items-center justify-center pb-20">
-                    <div className="w-full max-w-[520px]">
-                        <div className="mb-10">
-                            <h1 className="text-4xl font-semibold tracking-[-0.04em] text-text-primary sm:text-5xl">
+                <div className="flex flex-1 items-start justify-center pb-16 pt-4 sm:items-center sm:pt-0">
+                    <div className="w-full max-w-[440px] rounded-2xl border border-border bg-surface p-6 shadow-card motion-safe:animate-rise-in sm:p-8">
+                        <div className="mb-7">
+                            <h1 className="text-[26px] font-semibold tracking-[-0.025em] text-text-primary sm:text-[30px]">
                                 Welcome back.
                             </h1>
 
                             {step === "username" && (
-                                <p className="mt-5 max-w-md text-base leading-7 text-text-secondary">
+                                <p className="mt-1.5 text-sm leading-6 text-text-secondary">
                                     Sign in to continue managing your expenses.
                                 </p>
                             )}
@@ -112,12 +121,12 @@ function LoginPageContent() {
                         {step === "username" && (
                             <form
                                 onSubmit={handleContinue}
-                                className="space-y-5"
+                                className="space-y-4"
                             >
                                 <div>
                                     <label
                                         htmlFor="username"
-                                        className="mb-2 block text-sm font-medium text-text-primary"
+                                        className="mb-1.5 block text-[13px] font-medium text-text-primary"
                                     >
                                         Username
                                     </label>
@@ -133,12 +142,15 @@ function LoginPageContent() {
                                         autoComplete="username"
                                         autoFocus
                                         placeholder="Enter your username"
-                                        className="h-14 w-full border border-border-strong bg-surface px-4 text-base text-text-primary outline-none transition placeholder:text-text-muted focus:border-text-primary focus:ring-2 focus:ring-accent/40"
+                                        className="h-12 w-full rounded-[10px] border border-border bg-surface px-3.5 text-[15px] text-text-primary outline-none transition-[border-color,box-shadow] placeholder:text-text-secondary hover:border-border-strong focus:border-dark focus:ring-4 focus:ring-accent/40"
                                     />
                                 </div>
 
                                 {error && (
-                                    <p className="text-sm text-red-600">
+                                    <p
+                                    role="alert"
+                                    className="rounded-[10px] border border-negative/20 bg-negative-soft px-3.5 py-2.5 text-sm text-negative"
+                                >
                                         {error}
                                     </p>
                                 )}
@@ -146,24 +158,24 @@ function LoginPageContent() {
                                 <button
                                     type="submit"
                                     disabled={!canContinue}
-                                    className="h-14 w-full bg-accent text-base font-semibold text-text-primary transition hover:bg-accent-hover disabled:cursor-not-allowed"
+                                    className="h-12 w-full rounded-[10px] bg-dark text-[15px] font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
                                 >
-                                    Continue <span className="ml-2">→</span>
+                                    Continue <span aria-hidden="true" className="ml-1.5 text-accent">→</span>
                                 </button>
                             </form>
                         )}
 
                         {step === "password" && (
-                            <form onSubmit={handleLogin} className="space-y-5">
+                            <form onSubmit={handleLogin} className="space-y-4">
                                 <div>
                                     <label
                                         htmlFor="username"
-                                        className="mb-2 block text-sm font-medium text-text-primary"
+                                        className="mb-1.5 block text-[13px] font-medium text-text-primary"
                                     >
                                         Username
                                     </label>
 
-                                    <div className="flex h-14 w-full items-center border border-border bg-surface px-4 text-base text-text-primary">
+                                    <div className="flex h-12 w-full items-center rounded-[10px] border border-border bg-surface-muted px-3.5 text-[15px] font-medium text-text-primary">
                                         {username}
                                     </div>
                                 </div>
@@ -171,7 +183,7 @@ function LoginPageContent() {
                                 <div>
                                     <label
                                         htmlFor="password"
-                                        className="mb-2 block text-sm font-medium text-text-primary"
+                                        className="mb-1.5 block text-[13px] font-medium text-text-primary"
                                     >
                                         Password
                                     </label>
@@ -192,7 +204,7 @@ function LoginPageContent() {
                                             autoComplete="current-password"
                                             autoFocus
                                             placeholder="Enter your password"
-                                            className="h-14 w-full border border-border-strong bg-surface px-4 pr-14 text-base text-text-primary outline-none transition placeholder:text-text-muted focus:border-text-primary focus:ring-2 focus:ring-accent/40"
+                                            className="h-12 w-full rounded-[10px] border border-border bg-surface px-3.5 text-[15px] text-text-primary outline-none transition-[border-color,box-shadow] placeholder:text-text-secondary hover:border-border-strong focus:border-dark focus:ring-4 focus:ring-accent/40 pr-12"
                                         />
 
                                         <button
@@ -207,9 +219,19 @@ function LoginPageContent() {
                                                     ? "Hide password"
                                                     : "Show password"
                                             }
-                                            className="absolute right-0 top-0 flex h-14 w-14 items-center justify-center text-text-secondary transition hover:text-text-primary"
+                                            className="absolute right-1 top-1 flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-surface-muted hover:text-text-primary"
                                         >
-                                            {showPassword ? "◉" : "○"}
+                                            {showPassword ? (
+                                            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M3 3l18 18M10.6 5.1A9.7 9.7 0 0 1 12 5c5 0 8.5 4.5 9.5 7a12 12 0 0 1-2.6 3.7M6.6 6.6A12.3 12.3 0 0 0 2.5 12c1 2.5 4.5 7 9.5 7a9.6 9.6 0 0 0 4.4-1.1" />
+                                                <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                                            </svg>
+                                        ) : (
+                                            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M2.5 12C3.5 9.5 7 5 12 5s8.5 4.5 9.5 7c-1 2.5-4.5 7-9.5 7s-8.5-4.5-9.5-7Z" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+                                        )}
                                         </button>
                                     </div>
                                 </div>
@@ -224,7 +246,10 @@ function LoginPageContent() {
                                 </div>
 
                                 {error && (
-                                    <p className="text-sm text-red-600">
+                                    <p
+                                    role="alert"
+                                    className="rounded-[10px] border border-negative/20 bg-negative-soft px-3.5 py-2.5 text-sm text-negative"
+                                >
                                         {error}
                                     </p>
                                 )}
@@ -232,28 +257,28 @@ function LoginPageContent() {
                                 <button
                                     type="submit"
                                     disabled={isLoading || !password}
-                                    className="h-14 w-full bg-accent text-base font-semibold text-text-primary transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+                                    className="h-12 w-full rounded-[10px] bg-dark text-[15px] font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
                                 >
                                     {isLoading ? (
                                         <span className="flex items-center justify-center gap-2">
-                                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-400 border-t-neutral-700" />
+                                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-text-on-dark/30 border-t-text-on-dark" />
                                             Signing in...
                                         </span>
                                     ) : (
                                         <>
                                             Sign in{" "}
-                                            <span className="ml-2">→</span>
+                                            <span aria-hidden="true" className="ml-1.5 text-accent">→</span>
                                         </>
                                     )}
                                 </button>
                             </form>
                         )}
 
-                        <p className="mt-8 text-center text-sm text-text-secondary">
-                            Don't have an account?{" "}
+                        <p className="mt-6 border-t border-surface-muted pt-5 text-center text-sm text-text-secondary">
+                            Don&apos;t have an account?{" "}
                             <Link
                                 href="/register"
-                                className="font-medium text-text-primary underline underline-offset-4"
+                                className="font-semibold text-text-primary underline decoration-accent decoration-2 underline-offset-4 transition-colors hover:text-text-secondary"
                             >
                                 Create one
                             </Link>

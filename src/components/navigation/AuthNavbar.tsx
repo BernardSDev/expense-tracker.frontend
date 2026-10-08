@@ -164,12 +164,12 @@ export default function AuthNavbar() {
         ? username.charAt(0).toUpperCase()
         : "U";
 
-    const accountMenu = (placement: "below" | "above") => (
+    const accountMenu = (placement: "sidebar" | "above") => (
         <div
             role="menu"
-            className={`absolute right-0 z-50 w-60 overflow-hidden rounded-xl border border-border bg-surface shadow-float ${
-                placement === "below"
-                    ? "top-full mt-2"
+            className={`absolute right-0 z-50 w-60 overflow-hidden rounded-xl border border-border bg-surface shadow-float motion-safe:animate-pop-in ${
+                placement === "sidebar"
+                    ? "inset-x-0 bottom-[calc(100%+0.5rem)] w-auto"
                     : "bottom-[calc(100%+0.75rem)] right-3"
             }`}
         >
@@ -203,7 +203,7 @@ export default function AuthNavbar() {
     );
 
     const desktopLinkClass = (active: boolean) =>
-        `inline-flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-colors ${
+        `flex h-10 items-center gap-3 rounded-[10px] px-3 text-sm transition-colors ${
             active
                 ? "bg-surface-muted font-semibold text-text-primary"
                 : "font-medium text-text-secondary hover:bg-surface-muted/60 hover:text-text-primary"
@@ -223,12 +223,9 @@ export default function AuthNavbar() {
 
     return (
         <>
-            {/* Desktop navbar */}
-            <nav
-                aria-label="Main"
-                className="sticky top-0 z-40 hidden border-b border-border bg-surface/90 backdrop-blur sm:block"
-            >
-                <div className="mx-auto flex h-16 max-w-7xl items-center gap-8 px-6 lg:px-8">
+            {/* Desktop sidebar */}
+            <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-border bg-surface lg:flex">
+                <div className="flex h-16 items-center px-5">
                     <Link
                         href="/dashboard"
                         className="flex items-center gap-2.5 rounded-lg"
@@ -244,8 +241,17 @@ export default function AuthNavbar() {
                             Trackk
                         </span>
                     </Link>
+                </div>
 
-                    <div className="flex items-center gap-1">
+                <nav
+                    aria-label="Main"
+                    className="flex-1 px-3 pt-4"
+                >
+                    <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-muted">
+                        Menu
+                    </p>
+
+                    <div className="flex flex-col gap-0.5">
                         <Link
                             href="/dashboard"
                             aria-current={isOverview ? "page" : undefined}
@@ -264,45 +270,69 @@ export default function AuthNavbar() {
                             Expenses
                         </Link>
                     </div>
+                </nav>
 
-                    {/* Desktop account menu */}
-                    <div
-                        ref={desktopAccountRef}
-                        className="relative ml-auto"
+                {/* Desktop account menu */}
+                <div
+                    ref={desktopAccountRef}
+                    className="relative border-t border-border p-3"
+                >
+                    <button
+                        type="button"
+                        onClick={() =>
+                            setAccountOpen((current) => !current)
+                        }
+                        aria-expanded={accountOpen}
+                        aria-haspopup="menu"
+                        className={`flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors ${
+                            accountOpen
+                                ? "bg-surface-muted"
+                                : "hover:bg-surface-muted"
+                        }`}
                     >
-                        <button
-                            type="button"
-                            onClick={() =>
-                                setAccountOpen((current) => !current)
-                            }
-                            aria-expanded={accountOpen}
-                            aria-haspopup="menu"
-                            className={`flex h-10 items-center gap-2.5 rounded-full border py-1 pl-1 pr-3 transition-colors ${
-                                accountOpen
-                                    ? "border-border-strong bg-surface-muted"
-                                    : "border-border bg-surface hover:border-border-strong"
-                            }`}
-                        >
-                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-text-primary">
-                                {avatarLetter}
-                            </span>
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-text-primary">
+                            {avatarLetter}
+                        </span>
 
-                            <span className="max-w-32 truncate text-sm font-medium text-text-primary">
+                        <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold text-text-primary">
                                 {username || "Account"}
                             </span>
+                            <span className="block text-xs text-text-secondary">
+                                Personal account
+                            </span>
+                        </span>
 
-                            <ChevronIcon open={accountOpen} />
-                        </button>
+                        <ChevronIcon open={accountOpen} />
+                    </button>
 
-                        {accountOpen && accountMenu("below")}
-                    </div>
+                    {accountOpen && accountMenu("sidebar")}
                 </div>
-            </nav>
+            </aside>
+
+            {/* Mobile top bar */}
+            <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-surface/90 px-4 backdrop-blur sm:px-6 lg:hidden">
+                <Link
+                    href="/dashboard"
+                    className="flex items-center gap-2"
+                >
+                    <span
+                        aria-hidden="true"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg bg-dark text-[13px] font-bold text-accent"
+                    >
+                        ₵
+                    </span>
+
+                    <span className="text-base font-semibold tracking-[-0.03em] text-text-primary">
+                        Trackk
+                    </span>
+                </Link>
+            </header>
 
             {/* Mobile bottom navigation */}
             <nav
                 aria-label="Main"
-                className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface/95 backdrop-blur sm:hidden"
+                className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface/95 backdrop-blur lg:hidden"
             >
                 <div className="grid grid-cols-3 px-2 pb-[env(safe-area-inset-bottom)]">
                     <Link

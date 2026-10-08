@@ -23,7 +23,7 @@ function Button({
     return (
         <button
             {...props}
-            className={`inline-flex h-11 items-center justify-center gap-2 rounded-[10px] px-5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60 disabled:cursor-not-allowed disabled:opacity-60 ${variantClasses[variant]} ${className}`}
+            className={`inline-flex h-11 items-center justify-center gap-2 rounded-[10px] px-5 text-sm font-semibold transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/60 disabled:cursor-not-allowed disabled:opacity-60 ${variantClasses[variant]} ${className}`}
         />
     );
 }

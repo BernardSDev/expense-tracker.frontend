@@ -242,7 +242,7 @@ function ExpenseList({
             <section
                 aria-busy="true"
                 aria-label="Loading expenses"
-                className="overflow-hidden rounded-2xl border border-border bg-surface"
+                className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card"
             >
                 <div className="divide-y divide-border">
                     {[0, 1, 2].map((item) => (
@@ -284,7 +284,7 @@ function ExpenseList({
                 <button
                     type="button"
                     onClick={onRetry}
-                    className="mt-5 h-10 rounded-xl bg-dark px-5 text-sm font-semibold text-text-on-dark transition-colors hover:bg-dark-surface"
+                    className="mt-5 h-10 rounded-xl bg-dark px-5 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
                 >
                     Try again
                 </button>
@@ -307,7 +307,7 @@ function ExpenseList({
                     <button
                         type="button"
                         onClick={onAddExpense}
-                        className="mt-5 h-10 rounded-xl bg-dark px-5 text-sm font-semibold text-text-on-dark transition-colors hover:bg-dark-surface"
+                        className="mt-5 h-10 rounded-xl bg-dark px-5 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
                     >
                         Add expense
                     </button>
@@ -387,7 +387,7 @@ function ExpenseList({
                                 </p>
                             </div>
 
-                            <ul className="divide-y divide-surface-muted rounded-2xl border border-border bg-surface">
+                            <ul className="divide-y divide-surface-muted rounded-2xl border border-border bg-surface shadow-card">
                                 {group.expenses.map((expense) => {
                                     const isMenuOpen = openMenuId === expense.id;
 
@@ -454,7 +454,7 @@ function ExpenseList({
             {/* Mobile: action sheet for the selected expense */}
             {menuExpense && (
                 <div
-                    className="fixed inset-0 z-[60] flex items-end bg-dark/40 backdrop-blur-[2px] md:hidden"
+                    className="fixed inset-0 z-[60] flex items-end bg-dark/40 backdrop-blur-[2px] motion-safe:animate-fade-in md:hidden"
                     onMouseDown={(event) => {
                         if (event.target === event.currentTarget) {
                             setOpenMenuId(null);
@@ -466,7 +466,7 @@ function ExpenseList({
                         role="dialog"
                         aria-modal="true"
                         aria-label={`Actions for ${menuExpense.description}`}
-                        className="w-full rounded-t-[20px] bg-surface px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-2 shadow-float"
+                        className="w-full rounded-t-[20px] bg-surface motion-safe:animate-sheet-in px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-2 shadow-float"
                     >
                         <div
                             aria-hidden="true"
@@ -555,7 +555,7 @@ function ExpenseList({
             )}
 
             {/* Desktop: table card with toolbar */}
-            <div className="hidden overflow-hidden rounded-2xl border border-border bg-surface md:block">
+            <div className="hidden overflow-hidden rounded-2xl border border-border bg-surface shadow-card md:block">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-surface-muted px-4 py-3.5">
                     <div className="flex flex-wrap gap-1.5">
                         {chips("desktop")}

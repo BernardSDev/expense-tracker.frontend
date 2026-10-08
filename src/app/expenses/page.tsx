@@ -97,8 +97,8 @@ export default function ExpensesPage() {
             <div className="min-h-screen bg-background">
                 <AuthNavbar />
 
-                <main>
-                    <div className="mx-auto max-w-7xl px-4 pb-44 pt-5 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8">
+                <main className="lg:pl-60">
+                    <div className="mx-auto max-w-7xl px-4 pb-44 pt-5 sm:px-6 sm:pt-8 lg:px-10 lg:pb-12 lg:pt-10">
                         <ExpenseHeader
                             onAddExpense={
                                 handleAddExpense
@@ -166,7 +166,7 @@ export default function ExpensesPage() {
                         <button
                             type="button"
                             onClick={handleAddExpense}
-                            className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom)+1.25rem)] right-5 z-40 inline-flex h-[52px] items-center gap-2 rounded-2xl bg-dark pl-4 pr-5 text-[15px] font-semibold text-text-on-dark shadow-float transition-colors hover:bg-dark-surface sm:hidden"
+                            className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom)+1.25rem)] right-5 z-40 inline-flex h-[52px] items-center gap-2 rounded-2xl bg-dark pl-4 pr-5 text-[15px] font-semibold text-text-on-dark shadow-float transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] lg:hidden"
                         >
                             <svg
                                 aria-hidden="true"

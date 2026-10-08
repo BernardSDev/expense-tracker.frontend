@@ -1,28 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 
 type ProtectedRouteProps = {
     children: React.ReactNode;
 };
 
+function subscribeToStorage(callback: () => void) {
+    window.addEventListener("storage", callback);
+
+    return () => window.removeEventListener("storage", callback);
+}
+
+function getHasToken() {
+    return Boolean(localStorage.getItem("accessToken"));
+}
+
+// On the server we can't see localStorage, so we don't know yet.
+function getServerHasToken() {
+    return null;
+}
+
 export default function ProtectedRoute({
                                            children,
                                        }: ProtectedRouteProps) {
     const router = useRouter();
-    const [isChecking, setIsChecking] = useState(true);
+
+    const hasToken = useSyncExternalStore<boolean | null>(
+        subscribeToStorage,
+        getHasToken,
+        getServerHasToken
+    );
 
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-
-        if (!accessToken) {
+        if (hasToken === false) {
             router.replace("/login");
-            return;
         }
+    }, [hasToken, router]);
 
-        setIsChecking(false);
-    }, [router]);
+    const isChecking = hasToken !== true;
 
     if (isChecking) {
         return (

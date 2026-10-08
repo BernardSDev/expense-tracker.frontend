@@ -96,7 +96,7 @@ function groupByDay(expenses: Expense[]): ExpenseGroup[] {
 }
 
 function CategoryIcon({ expense }: { expense: Expense }) {
-    const styles = getCategoryStyles(expense.categoryName);
+    const styles = getCategoryStyles(expense.categoryName, expense.categoryId);
 
     return (
         <span
@@ -604,7 +604,8 @@ function ExpenseList({
                             <tbody>
                                 {filtered.map((expense) => {
                                     const styles = getCategoryStyles(
-                                        expense.categoryName
+                                        expense.categoryName,
+                                        expense.categoryId
                                     );
 
                                     return (

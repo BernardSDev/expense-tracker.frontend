@@ -22,15 +22,38 @@
 
     --text-on-dark: #f8f8f5;
 
-    /* Category colours: base for bars, soft for tiles and pills, strong for icons and dots */
-    --category-1: #9bb520;
+    /* Category colours (validated set, assigned by category id in fixed order).
+       base: bars and dots on light surfaces, soft: tiles and pills,
+       strong: text and icons on soft, on-dark: bars on the dark card */
+    --category-1: #9bb520; /* lime */
     --category-1-soft: #eef7c8;
-    --category-1-strong: #6e8212;
+    --category-1-strong: #4f5e0c;
+    --category-1-on-dark: #86a00f;
 
-    --category-2: #5b78e8;
+    --category-2: #5b78e8; /* blue */
     --category-2-soft: #e3e9ff;
-    --category-2-strong: #3f5bd0;
-    --category-2-on-dark: #8fa7ff;
+    --category-2-strong: #3550c4;
+    --category-2-on-dark: #6283ee;
+
+    --category-3: #e0803a; /* orange */
+    --category-3-soft: #fdebdc;
+    --category-3-strong: #9a4a12;
+    --category-3-on-dark: #c96a22;
+
+    --category-4: #2a9d8f; /* teal */
+    --category-4-soft: #d6f1ed;
+    --category-4-strong: #19665c;
+    --category-4-on-dark: #2a9d8f;
+
+    --category-5: #8a63d2; /* purple */
+    --category-5-soft: #ece4fb;
+    --category-5-strong: #5b3aa0;
+    --category-5-on-dark: #9470dc;
+
+    --category-6: #d1588f; /* pink */
+    --category-6-soft: #fbe2ed;
+    --category-6-strong: #9b2f5f;
+    --category-6-on-dark: #d1588f;
 }
 
 @theme inline {
@@ -58,11 +81,32 @@
     --color-category-1: var(--category-1);
     --color-category-1-soft: var(--category-1-soft);
     --color-category-1-strong: var(--category-1-strong);
+    --color-category-1-on-dark: var(--category-1-on-dark);
 
     --color-category-2: var(--category-2);
     --color-category-2-soft: var(--category-2-soft);
     --color-category-2-strong: var(--category-2-strong);
     --color-category-2-on-dark: var(--category-2-on-dark);
+
+    --color-category-3: var(--category-3);
+    --color-category-3-soft: var(--category-3-soft);
+    --color-category-3-strong: var(--category-3-strong);
+    --color-category-3-on-dark: var(--category-3-on-dark);
+
+    --color-category-4: var(--category-4);
+    --color-category-4-soft: var(--category-4-soft);
+    --color-category-4-strong: var(--category-4-strong);
+    --color-category-4-on-dark: var(--category-4-on-dark);
+
+    --color-category-5: var(--category-5);
+    --color-category-5-soft: var(--category-5-soft);
+    --color-category-5-strong: var(--category-5-strong);
+    --color-category-5-on-dark: var(--category-5-on-dark);
+
+    --color-category-6: var(--category-6);
+    --color-category-6-soft: var(--category-6-soft);
+    --color-category-6-strong: var(--category-6-strong);
+    --color-category-6-on-dark: var(--category-6-on-dark);
 
     --shadow-float: 0 8px 24px rgba(23, 23, 23, 0.16);
 

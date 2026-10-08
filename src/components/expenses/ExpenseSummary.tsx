@@ -13,6 +13,7 @@ type ExpenseSummaryProps = {
 type CategoryTotal = {
     name: string;
     categoryName: string | null;
+    categoryId: number | null;
     total: number;
 };
 
@@ -31,6 +32,7 @@ function getCategoryTotals(expenses: Expense[]): CategoryTotal[] {
         totals.set(name, {
             name,
             categoryName: expense.categoryName,
+            categoryId: expense.categoryId,
             total: expense.amount,
         });
     }
@@ -83,7 +85,7 @@ function ExpenseSummary({
             aria-hidden="true"
         >
             {categoryTotals.map((category) => {
-                const styles = getCategoryStyles(category.categoryName);
+                const styles = getCategoryStyles(category.categoryName, category.categoryId);
 
                 return (
                     <div
@@ -137,7 +139,7 @@ function ExpenseSummary({
                                 >
                                     <span
                                         aria-hidden="true"
-                                        className={`h-2 w-2 rounded-[3px] ${getCategoryStyles(category.categoryName).barOnDark}`}
+                                        className={`h-2 w-2 rounded-[3px] ${getCategoryStyles(category.categoryName, category.categoryId).barOnDark}`}
                                     />
                                     {category.name}
                                     <span className="tabular text-text-on-dark">
@@ -185,7 +187,7 @@ function ExpenseSummary({
                                 >
                                     <span
                                         aria-hidden="true"
-                                        className={`h-2 w-2 rounded-[3px] ${getCategoryStyles(category.categoryName).bar}`}
+                                        className={`h-2 w-2 rounded-[3px] ${getCategoryStyles(category.categoryName, category.categoryId).bar}`}
                                     />
                                     {category.name}
                                     <span className="tabular ml-auto">

@@ -5,7 +5,10 @@ import { useState, useSyncExternalStore } from "react";
 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import AuthNavbar from "@/components/navigation/AuthNavbar";
-import CategoryBreakdown from "@/components/dashboard/CategoryBreakdown";
+import CategoryBreakdown, {
+    CategoryBar,
+    getCategoryTotals,
+} from "@/components/dashboard/CategoryBreakdown";
 import SpendingChart from "@/components/dashboard/SpendingChart";
 import AddExpenseForm from "@/components/expenses/AddExpenseForm";
 import { getCategoryStyles } from "@/components/expenses/categoryStyles";
@@ -103,14 +106,8 @@ export default function DashboardPage() {
             ? ((monthTotal - lastMonthTotal) / lastMonthTotal) * 100
             : null;
 
-    const categoryTotals = new Map<string, number>();
-    for (const expense of thisMonthExpenses) {
-        const name = expense.categoryName ?? "Uncategorized";
-        categoryTotals.set(name, (categoryTotals.get(name) ?? 0) + expense.amount);
-    }
-    const topCategory = Array.from(categoryTotals.entries()).sort(
-        (a, b) => b[1] - a[1]
-    )[0];
+    const monthCategories = getCategoryTotals(thisMonthExpenses);
+    const topCategory = monthCategories.find((category) => category.key !== "other");
 
     const recentExpenses = expenses
         .slice()
@@ -227,6 +224,40 @@ export default function DashboardPage() {
                                             </>
                                         )}
                                     </p>
+
+                                    {monthTotal > 0 && (
+                                        <div className="mt-4 flex flex-col gap-2.5">
+                                            <CategoryBar
+                                                categories={monthCategories}
+                                                variant="dark"
+                                                className="h-2"
+                                            />
+
+                                            <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-text-muted">
+                                                {monthCategories.slice(0, 3).map((category) => (
+                                                    <li
+                                                        key={category.key}
+                                                        className="flex min-w-0 items-center gap-1.5"
+                                                    >
+                                                        <span
+                                                            aria-hidden="true"
+                                                            className={`h-2 w-2 shrink-0 rounded-[3px] ${category.styles.barOnDark}`}
+                                                        />
+                                                        <span className="truncate">
+                                                            {category.name}
+                                                        </span>
+                                                        <span className="tabular text-text-on-dark">
+                                                            {formatAmount(category.total)}
+                                                        </span>
+                                                    </li>
+                                                ))}
+
+                                                {monthCategories.length > 3 && (
+                                                    <li>+{monthCategories.length - 3} more</li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </div>
@@ -281,12 +312,12 @@ export default function DashboardPage() {
                                     </p>
 
                                     <p className="mt-2 truncate text-2xl font-semibold tracking-[-0.03em] text-text-primary sm:text-[28px]">
-                                        {topCategory ? topCategory[0] : "None yet"}
+                                        {topCategory ? topCategory.name : "None yet"}
                                     </p>
 
                                     <p className="mt-1 text-[13px] text-text-secondary">
                                         {topCategory && monthTotal > 0
-                                            ? `${formatAmount(topCategory[1])} · ${Math.round((topCategory[1] / monthTotal) * 100)}% of spending`
+                                            ? `${formatAmount(topCategory.total)} · ${Math.round((topCategory.total / monthTotal) * 100)}% of spending`
                                             : "Add an expense to see this"}
                                     </p>
                                 </>
@@ -376,7 +407,8 @@ export default function DashboardPage() {
                             <ul className="divide-y divide-surface-muted border-t border-surface-muted">
                                 {recentExpenses.map((expense) => {
                                     const styles = getCategoryStyles(
-                                        expense.categoryName
+                                        expense.categoryName,
+                                        expense.categoryId
                                     );
 
                                     return (

@@ -1,25 +1,42 @@
 import { Expense } from "@/types/expense";
 import { formatAmount } from "@/utils/expenses";
 
-import { getCategoryStyles } from "@/components/expenses/categoryStyles";
+import {
+    getCategoryStyles,
+    type CategoryStyles,
+} from "@/components/expenses/categoryStyles";
 
-type CategoryBreakdownProps = {
-    expenses: Expense[];
-};
-
-type CategoryTotal = {
+export type CategoryTotal = {
+    key: string;
     name: string;
-    categoryName: string | null;
     total: number;
     count: number;
+    styles: CategoryStyles;
 };
 
-function getCategoryTotals(expenses: Expense[]): CategoryTotal[] {
+const MAX_SEGMENTS = 5;
+
+const OTHER_STYLES: CategoryStyles = {
+    background: "bg-surface-muted",
+    color: "text-text-primary",
+    bar: "bg-border-strong",
+    barOnDark: "bg-text-muted",
+    dot: "bg-border-strong",
+};
+
+/**
+ * Totals per category, largest first. Anything past the top five folds
+ * into "Other" so the bar never needs a seventh colour.
+ */
+export function getCategoryTotals(expenses: Expense[]): CategoryTotal[] {
     const totals = new Map<string, CategoryTotal>();
 
     for (const expense of expenses) {
-        const name = expense.categoryName ?? "Uncategorized";
-        const existing = totals.get(name);
+        const key =
+            expense.categoryId !== null
+                ? `id-${expense.categoryId}`
+                : "uncategorized";
+        const existing = totals.get(key);
 
         if (existing) {
             existing.total += expense.amount;
@@ -27,16 +44,75 @@ function getCategoryTotals(expenses: Expense[]): CategoryTotal[] {
             continue;
         }
 
-        totals.set(name, {
-            name,
-            categoryName: expense.categoryName,
+        totals.set(key, {
+            key,
+            name: expense.categoryName ?? "Uncategorized",
             total: expense.amount,
             count: 1,
+            styles: getCategoryStyles(expense.categoryName, expense.categoryId),
         });
     }
 
-    return Array.from(totals.values()).sort((a, b) => b.total - a.total);
+    const sorted = Array.from(totals.values()).sort((a, b) => b.total - a.total);
+
+    if (sorted.length <= MAX_SEGMENTS + 1) {
+        return sorted;
+    }
+
+    const rest = sorted.slice(MAX_SEGMENTS);
+
+    return [
+        ...sorted.slice(0, MAX_SEGMENTS),
+        {
+            key: "other",
+            name: `Other (${rest.length})`,
+            total: rest.reduce((sum, category) => sum + category.total, 0),
+            count: rest.reduce((sum, category) => sum + category.count, 0),
+            styles: OTHER_STYLES,
+        },
+    ];
 }
+
+type CategoryBarProps = {
+    categories: CategoryTotal[];
+    variant?: "light" | "dark";
+    className?: string;
+};
+
+export function CategoryBar({
+                                categories,
+                                variant = "light",
+                                className = "h-2.5",
+                            }: CategoryBarProps) {
+    const total = categories.reduce((sum, category) => sum + category.total, 0);
+
+    if (total === 0) {
+        return null;
+    }
+
+    return (
+        <div
+            aria-hidden="true"
+            className={`flex gap-[2px] overflow-hidden rounded-full ${className}`}
+        >
+            {categories.map((category) => (
+                <div
+                    key={category.key}
+                    className={`h-full first:rounded-l-full last:rounded-r-full ${
+                        variant === "dark"
+                            ? category.styles.barOnDark
+                            : category.styles.bar
+                    }`}
+                    style={{ width: `${(category.total / total) * 100}%` }}
+                />
+            ))}
+        </div>
+    );
+}
+
+type CategoryBreakdownProps = {
+    expenses: Expense[];
+};
 
 export default function CategoryBreakdown({
                                               expenses,
@@ -46,61 +122,72 @@ export default function CategoryBreakdown({
 
     return (
         <div>
-            <h2 className="text-base font-semibold text-text-primary">
-                Where your money goes
-            </h2>
-            <p className="mt-0.5 text-[13px] text-text-secondary">
-                This month, by category
-            </p>
+            <div className="flex items-baseline justify-between gap-4">
+                <div>
+                    <h2 className="text-base font-semibold text-text-primary">
+                        By category
+                    </h2>
+                    <p className="mt-0.5 text-[13px] text-text-secondary">
+                        Where your money went this month
+                    </p>
+                </div>
+
+                {total > 0 && (
+                    <span className="rounded-full bg-surface-muted px-2 py-0.5 text-xs font-medium text-text-secondary">
+                        {categories.length}{" "}
+                        {categories.length === 1 ? "category" : "categories"}
+                    </span>
+                )}
+            </div>
 
             {total === 0 ? (
                 <div className="mt-5 flex h-44 items-center justify-center rounded-xl border border-dashed border-border-strong px-6 text-center text-sm text-text-secondary">
                     Add expenses this month to see your breakdown
                 </div>
             ) : (
-                <ul className="mt-5 space-y-4">
-                    {categories.map((category) => {
-                        const share = (category.total / total) * 100;
-                        const styles = getCategoryStyles(category.categoryName);
+                <>
+                    <CategoryBar
+                        categories={categories}
+                        className="mt-5 h-2.5"
+                    />
 
-                        return (
-                            <li key={category.name}>
-                                <div className="flex items-baseline justify-between gap-3 text-sm">
-                                    <span className="flex min-w-0 items-center gap-2 font-medium text-text-primary">
-                                        <span
-                                            aria-hidden="true"
-                                            className={`h-2 w-2 shrink-0 rounded-[3px] ${styles.bar}`}
-                                        />
-                                        <span className="truncate">
+                    <ul className="mt-4 divide-y divide-surface-muted">
+                        {categories.map((category) => {
+                            const share = Math.round((category.total / total) * 100);
+
+                            return (
+                                <li
+                                    key={category.key}
+                                    className="flex items-center gap-3 py-2.5 text-sm"
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        className={`h-2.5 w-2.5 shrink-0 rounded-[3px] ${category.styles.dot}`}
+                                    />
+
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block truncate font-medium text-text-primary">
                                             {category.name}
                                         </span>
-                                        <span className="shrink-0 text-[13px] font-normal text-text-secondary">
+                                        <span className="block text-xs text-text-secondary">
                                             {category.count}{" "}
                                             {category.count === 1 ? "expense" : "expenses"}
                                         </span>
                                     </span>
 
-                                    <span className="tabular shrink-0 font-semibold text-text-primary">
-                                        {formatAmount(category.total)}
+                                    <span className="text-right">
+                                        <span className="tabular block font-semibold text-text-primary">
+                                            {formatAmount(category.total)}
+                                        </span>
+                                        <span className="tabular block text-xs text-text-secondary">
+                                            {share}%
+                                        </span>
                                     </span>
-                                </div>
-
-                                <div className="mt-2 flex items-center gap-3">
-                                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-muted">
-                                        <div
-                                            className={`h-full rounded-full ${styles.bar}`}
-                                            style={{ width: `${share}%` }}
-                                        />
-                                    </div>
-
-                                    <span className="tabular w-10 shrink-0 text-right text-xs text-text-secondary">
-                                        {Math.round(share)}%
-                                    </span>
-                                </div>
-                            </li>
-                        );
-                    })}
-                </ul>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </>
             )}
         </div>
     );

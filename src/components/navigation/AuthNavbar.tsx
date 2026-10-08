@@ -159,6 +159,7 @@ export default function AuthNavbar() {
 
     const isOverview = pathname === "/dashboard";
     const isExpenses = pathname === "/expenses";
+    const activeIndex = isOverview ? 0 : isExpenses ? 1 : -1;
 
     const avatarLetter = username
         ? username.charAt(0).toUpperCase()
@@ -203,9 +204,9 @@ export default function AuthNavbar() {
     );
 
     const desktopLinkClass = (active: boolean) =>
-        `flex h-10 items-center gap-3 rounded-[10px] px-3 text-sm transition-colors ${
+        `relative z-10 flex h-10 items-center gap-3 rounded-[10px] px-3 text-sm transition-colors ${
             active
-                ? "bg-surface-muted font-semibold text-text-primary"
+                ? "font-semibold text-text-primary"
                 : "font-medium text-text-secondary hover:bg-surface-muted/60 hover:text-text-primary"
         }`;
 
@@ -216,10 +217,8 @@ export default function AuthNavbar() {
                 : "font-medium text-text-secondary"
         }`;
 
-    const mobileIconClass = (active: boolean) =>
-        `flex h-8 items-center justify-center rounded-full px-4 transition-colors ${
-            active ? "bg-accent" : ""
-        }`;
+    const mobileIconClass = () =>
+        "relative z-10 flex h-8 items-center justify-center px-4";
 
     return (
         <>
@@ -251,7 +250,18 @@ export default function AuthNavbar() {
                         Menu
                     </p>
 
-                    <div className="flex flex-col gap-0.5">
+                    <div className="relative flex flex-col gap-0.5">
+                        {/* Sliding highlight behind the active item */}
+                        <span
+                            aria-hidden="true"
+                            className={`absolute inset-x-0 top-0 h-10 rounded-[10px] bg-surface-muted transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none ${
+                                activeIndex === -1 ? "opacity-0" : "opacity-100"
+                            }`}
+                            style={{
+                                transform: `translateY(${Math.max(activeIndex, 0) * 42}px)`,
+                            }}
+                        />
+
                         <Link
                             href="/dashboard"
                             aria-current={isOverview ? "page" : undefined}
@@ -334,13 +344,26 @@ export default function AuthNavbar() {
                 aria-label="Main"
                 className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface/95 backdrop-blur lg:hidden"
             >
-                <div className="grid grid-cols-3 px-2 pb-[env(safe-area-inset-bottom)]">
+                <div className="relative grid grid-cols-3 px-2 pb-[env(safe-area-inset-bottom)]">
+                    {/* Sliding lime pill behind the active icon */}
+                    <span
+                        aria-hidden="true"
+                        className={`pointer-events-none absolute left-2 top-0 flex h-16 w-[calc((100%-1rem)/3)] items-start justify-center pt-[calc((4rem-3.25rem)/2)] transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none ${
+                            activeIndex === -1 ? "opacity-0" : "opacity-100"
+                        }`}
+                        style={{
+                            transform: `translateX(${Math.max(activeIndex, 0) * 100}%)`,
+                        }}
+                    >
+                        <span className="h-8 w-[3.25rem] rounded-full bg-accent" />
+                    </span>
+
                     <Link
                         href="/dashboard"
                         aria-current={isOverview ? "page" : undefined}
                         className={mobileLinkClass(isOverview)}
                     >
-                        <span className={mobileIconClass(isOverview)}>
+                        <span className={mobileIconClass()}>
                             <HomeIcon active={isOverview} />
                         </span>
 
@@ -352,7 +375,7 @@ export default function AuthNavbar() {
                         aria-current={isExpenses ? "page" : undefined}
                         className={mobileLinkClass(isExpenses)}
                     >
-                        <span className={mobileIconClass(isExpenses)}>
+                        <span className={mobileIconClass()}>
                             <ExpensesIcon active={isExpenses} />
                         </span>
 

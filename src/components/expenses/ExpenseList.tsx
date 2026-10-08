@@ -11,6 +11,7 @@ import {
 } from "@/utils/expenses";
 
 import { getCategoryStyles } from "./categoryStyles";
+import EmptyState from "@/components/ui/EmptyState";
 
 type ExpenseListProps = {
     expenses: Expense[];
@@ -343,7 +344,7 @@ function ExpenseList({
                     {[0, 1, 2].map((item) => (
                         <div
                             key={item}
-                            className="flex animate-pulse items-center gap-3 px-4 py-4 sm:px-6"
+                            className="flex shimmer items-center gap-3 px-4 py-4 sm:px-6"
                         >
                             <div className="h-[42px] w-[42px] shrink-0 rounded-xl bg-surface-muted" />
 
@@ -379,7 +380,7 @@ function ExpenseList({
                 <button
                     type="button"
                     onClick={onRetry}
-                    className="mt-5 h-10 rounded-xl bg-dark px-5 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
+                    className="mt-5 h-10 rounded-xl bg-dark px-5 text-sm font-semibold text-text-on-dark transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98]"
                 >
                     Try again
                 </button>
@@ -389,24 +390,35 @@ function ExpenseList({
 
     if (expenses.length === 0) {
         return (
-            <section className="rounded-2xl border border-dashed border-border-strong bg-surface px-6 py-12 text-center">
-                <h2 className="text-base font-semibold text-text-primary">
-                    No expenses yet
-                </h2>
-
-                <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-text-secondary">
-                    Add your first expense and it will show up here.
-                </p>
-
-                {onAddExpense && (
-                    <button
-                        type="button"
-                        onClick={onAddExpense}
-                        className="mt-5 h-10 rounded-xl bg-dark px-5 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
-                    >
-                        Add expense
-                    </button>
-                )}
+            <section className="rounded-2xl border border-border bg-surface p-4 shadow-card sm:p-6">
+                <EmptyState
+                    icon="receipt"
+                    title="No expenses yet"
+                    description="Your first one is a tap away. Add it and it'll show up here."
+                    className="py-10"
+                    action={
+                        onAddExpense && (
+                            <button
+                                type="button"
+                                onClick={onAddExpense}
+                                className="inline-flex h-10 items-center gap-2 rounded-[10px] bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98]"
+                            >
+                                <svg
+                                    aria-hidden="true"
+                                    viewBox="0 0 24 24"
+                                    className="h-4 w-4 text-accent"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.2"
+                                    strokeLinecap="round"
+                                >
+                                    <path d="M12 5v14M5 12h14" />
+                                </svg>
+                                Add your first expense
+                            </button>
+                        )
+                    }
+                />
             </section>
         );
     }
@@ -437,9 +449,12 @@ function ExpenseList({
         });
 
     const noMatches = (
-        <div className="rounded-2xl border border-dashed border-border-strong bg-surface px-4 py-8 text-center text-sm text-text-secondary">
-            No expenses match your filters.
-        </div>
+        <EmptyState
+            icon="search"
+            title="Nothing matches"
+            description="Try a different search or pick another category."
+            className="bg-surface"
+        />
     );
 
     return (
@@ -670,8 +685,12 @@ function ExpenseList({
                 </div>
 
                 {filtered.length === 0 ? (
-                    <div className="px-4 py-10 text-center text-sm text-text-secondary">
-                        No expenses match your filters.
+                    <div className="p-4">
+                        <EmptyState
+                            icon="search"
+                            title="Nothing matches"
+                            description="Try a different search or pick another category."
+                        />
                     </div>
                 ) : (
                     <div className="overflow-x-auto">

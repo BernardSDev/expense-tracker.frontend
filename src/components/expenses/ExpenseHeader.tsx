@@ -53,7 +53,7 @@ function ExpenseHeader({
                             <button
                                 type="button"
                                 onClick={onAddExpense}
-                                className="hidden h-10 items-center gap-2 rounded-[10px] bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] lg:inline-flex"
+                                className="hidden h-10 items-center gap-2 rounded-[10px] bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98] lg:inline-flex"
                             >
                                 <svg
                                     aria-hidden="true"

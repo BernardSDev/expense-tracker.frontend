@@ -35,7 +35,7 @@ export default function Home() {
 
                             <Link
                                 href="/register"
-                                className="inline-flex h-10 items-center rounded-[10px] bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
+                                className="inline-flex h-10 items-center rounded-[10px] bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98]"
                             >
                                 Get started
                             </Link>
@@ -70,7 +70,7 @@ export default function Home() {
                             <div className="mt-9 flex flex-wrap items-center gap-4">
                                 <Link
                                     href="/register"
-                                    className="inline-flex h-12 items-center justify-center rounded-[10px] bg-dark px-6 text-[15px] font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
+                                    className="inline-flex h-12 items-center justify-center rounded-[10px] bg-dark px-6 text-[15px] font-semibold text-text-on-dark transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98]"
                                 >
                                     Start tracking
                                     <span className="ml-2">→</span>

@@ -158,7 +158,7 @@ function LoginPageContent() {
                                 <button
                                     type="submit"
                                     disabled={!canContinue}
-                                    className="h-12 w-full rounded-[10px] bg-dark text-[15px] font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
+                                    className="h-12 w-full rounded-[10px] bg-dark text-[15px] font-semibold text-text-on-dark transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none disabled:opacity-50 disabled:active:scale-100"
                                 >
                                     Continue <span aria-hidden="true" className="ml-1.5 text-accent">→</span>
                                 </button>
@@ -257,7 +257,7 @@ function LoginPageContent() {
                                 <button
                                     type="submit"
                                     disabled={isLoading || !password}
-                                    className="h-12 w-full rounded-[10px] bg-dark text-[15px] font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
+                                    className="h-12 w-full rounded-[10px] bg-dark text-[15px] font-semibold text-text-on-dark transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none disabled:opacity-50 disabled:active:scale-100"
                                 >
                                     {isLoading ? (
                                         <span className="flex items-center justify-center gap-2">

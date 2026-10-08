@@ -3,6 +3,7 @@ import {Geist, Geist_Mono} from "next/font/google";
 import {Toaster} from "sonner";
 
 import QueryProvider from "@/providers/QueryProvider";
+import AppNavigation from "@/components/navigation/AppNavigation";
 
 import "./globals.css";
 
@@ -32,6 +33,7 @@ export default function RootLayout({children}: LayoutProps<"/">) {
         >
         <body className="flex min-h-full flex-col">
             <QueryProvider>
+                <AppNavigation />
                 {children}
             </QueryProvider>
 

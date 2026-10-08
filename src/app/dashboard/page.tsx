@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import AuthNavbar from "@/components/navigation/AuthNavbar";
 import CategoryBreakdown, {
     CategoryBar,
     getCategoryTotals,
@@ -13,6 +12,7 @@ import SpendingChart from "@/components/dashboard/SpendingChart";
 import AddExpenseForm from "@/components/expenses/AddExpenseForm";
 import { getCategoryStyles } from "@/components/expenses/categoryStyles";
 import AnimatedNumber from "@/components/ui/AnimatedNumber";
+import EmptyState from "@/components/ui/EmptyState";
 import Modal from "@/components/ui/Modal";
 import PageHeader from "@/components/ui/PageHeader";
 import StatLabel from "@/components/ui/StatLabel";
@@ -63,7 +63,7 @@ function StatSkeleton({ dark = false }: { dark?: boolean }) {
     const block = dark ? "bg-dark-surface" : "bg-surface-muted";
 
     return (
-        <div className="animate-pulse">
+        <div className="shimmer">
             <div className={`h-3.5 w-24 rounded ${block}`} />
             <div className={`mt-4 h-8 w-32 rounded ${block}`} />
             <div className={`mt-3 h-3.5 w-20 rounded ${block}`} />
@@ -101,6 +101,7 @@ export default function DashboardPage() {
     );
 
     const monthTotal = sum(thisMonthExpenses);
+    const todayTotal = sum(todayExpenses);
     const lastMonthTotal = sum(lastMonthExpenses);
     const dailyAverage = monthTotal / now.getDate();
 
@@ -126,7 +127,6 @@ export default function DashboardPage() {
 
     return (
         <ProtectedRoute>
-            <AuthNavbar />
 
             <main className="min-h-screen bg-background lg:pl-60">
                 <div className="stagger mx-auto max-w-7xl px-4 pb-28 pt-5 sm:px-6 sm:pt-8 lg:px-10 lg:pb-12 lg:pt-10">
@@ -139,7 +139,13 @@ export default function DashboardPage() {
                             year: "numeric",
                         })}
                         title={`${getGreeting(now.getHours())}${username ? `, ${username}` : ""}.`}
-                        description="Here's how your spending looks this month."
+                        description={
+                            isLoading
+                                ? "Here's how your spending looks this month."
+                                : todayExpenses.length === 0
+                                    ? "Nothing spent today so far."
+                                    : `You've spent ${formatAmount(todayTotal)} today across ${todayExpenses.length} ${todayExpenses.length === 1 ? "expense" : "expenses"}.`
+                        }
                         actions={
                             <>
                                 <Link
@@ -152,7 +158,7 @@ export default function DashboardPage() {
                                 <button
                                     type="button"
                                     onClick={() => setIsAddOpen(true)}
-                                    className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[10px] bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] sm:flex-none"
+                                    className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[10px] bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98] sm:flex-none"
                                 >
                                     <svg
                                         aria-hidden="true"
@@ -180,7 +186,7 @@ export default function DashboardPage() {
                             <button
                                 type="button"
                                 onClick={() => refetch()}
-                                className="h-9 shrink-0 rounded-lg bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98]"
+                                className="h-9 shrink-0 rounded-lg bg-dark px-4 text-sm font-semibold text-text-on-dark transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98]"
                             >
                                 Try again
                             </button>
@@ -326,7 +332,7 @@ export default function DashboardPage() {
                     <section className="mt-4 grid gap-4 lg:grid-cols-5">
                         <div className="rounded-2xl border border-border bg-surface shadow-card p-5 sm:p-6 lg:col-span-3">
                             {isLoading ? (
-                                <div className="h-60 animate-pulse rounded-xl bg-surface-muted" />
+                                <div className="h-60 shimmer rounded-xl bg-surface-muted" />
                             ) : (
                                 <SpendingChart expenses={expenses} />
                             )}
@@ -334,7 +340,7 @@ export default function DashboardPage() {
 
                         <div className="rounded-2xl border border-border bg-surface shadow-card p-5 sm:p-6 lg:col-span-2">
                             {isLoading ? (
-                                <div className="h-60 animate-pulse rounded-xl bg-surface-muted" />
+                                <div className="h-60 shimmer rounded-xl bg-surface-muted" />
                             ) : (
                                 <CategoryBreakdown expenses={thisMonthExpenses} />
                             )}
@@ -378,7 +384,7 @@ export default function DashboardPage() {
                                 {[0, 1, 2].map((item) => (
                                     <div
                                         key={item}
-                                        className="flex animate-pulse items-center gap-3 px-5 py-3.5 sm:px-6"
+                                        className="flex shimmer items-center gap-3 px-5 py-3.5 sm:px-6"
                                     >
                                         <div className="h-10 w-10 shrink-0 rounded-xl bg-surface-muted" />
                                         <div className="flex-1 space-y-2">
@@ -391,14 +397,11 @@ export default function DashboardPage() {
                             </div>
                         ) : recentExpenses.length === 0 ? (
                             <div className="px-5 pb-6 pt-2 sm:px-6">
-                                <div className="rounded-xl border border-dashed border-border-strong px-6 py-8 text-center">
-                                    <p className="text-sm font-medium text-text-primary">
-                                        No expenses yet
-                                    </p>
-                                    <p className="mt-1 text-sm text-text-secondary">
-                                        Add your first expense to start tracking.
-                                    </p>
-                                </div>
+                                <EmptyState
+                                    icon="receipt"
+                                    title="No expenses yet"
+                                    description="Your first one is a tap away. Add it and it'll show up here."
+                                />
                             </div>
                         ) : (
                             <ul className="divide-y divide-surface-muted border-t border-surface-muted">

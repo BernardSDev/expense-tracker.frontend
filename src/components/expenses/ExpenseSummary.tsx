@@ -61,7 +61,7 @@ function ExpenseSummary({
     if (isLoading) {
         return (
             <section className="mb-8 grid gap-3 sm:grid-cols-3 sm:gap-4">
-                <div className="animate-pulse rounded-2xl bg-dark p-5 sm:p-6">
+                <div className="shimmer rounded-2xl bg-dark p-5 sm:p-6">
                     <div className="h-4 w-28 rounded bg-dark-surface" />
                     <div className="mt-4 h-9 w-44 rounded bg-dark-surface" />
                     <div className="mt-5 h-2 w-full rounded-full bg-dark-surface" />
@@ -70,7 +70,7 @@ function ExpenseSummary({
                 {[0, 1].map((item) => (
                     <div
                         key={item}
-                        className="hidden animate-pulse rounded-2xl border border-border bg-surface shadow-card p-6 sm:block"
+                        className="hidden shimmer rounded-2xl border border-border bg-surface shadow-card p-6 sm:block"
                     >
                         <div className="h-4 w-28 rounded bg-surface-muted" />
                         <div className="mt-4 h-9 w-32 rounded bg-surface-muted" />

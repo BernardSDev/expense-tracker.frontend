@@ -1,3 +1,4 @@
+import EmptyState from "@/components/ui/EmptyState";
 import { Expense } from "@/types/expense";
 import { formatAmount } from "@/utils/expenses";
 
@@ -74,9 +75,12 @@ export default function SpendingChart({
             </div>
 
             {max === 0 ? (
-                <div className="mt-5 flex h-44 items-center justify-center rounded-xl border border-dashed border-border-strong text-sm text-text-secondary">
-                    No spending in the last {days} days
-                </div>
+                <EmptyState
+                    icon="chart"
+                    title="A quiet couple of weeks"
+                    description={`Nothing spent in the last ${days} days. Your daily bars will show up here.`}
+                    className="mt-5 h-44 py-4"
+                />
             ) : (
                 <>
                     <div

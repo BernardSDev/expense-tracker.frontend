@@ -16,7 +16,6 @@ import AddExpenseForm from "@/components/expenses/AddExpenseForm";
 import EditExpenseForm from "@/components/expenses/EditExpenseForm";
 import CategoryManager from "@/components/categories/CategoryManager";
 
-import AuthNavbar from "@/components/navigation/AuthNavbar";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 
@@ -81,6 +80,9 @@ export default function ExpensesPage() {
                     );
 
                     setExpenseToDelete(null);
+
+                    // A light tap on phones that support it
+                    navigator.vibrate?.(12);
                 },
 
                 onError: () => {
@@ -95,7 +97,6 @@ export default function ExpensesPage() {
     return (
         <ProtectedRoute>
             <div className="min-h-screen bg-background">
-                <AuthNavbar />
 
                 <main className="lg:pl-60">
                     <div className="mx-auto max-w-7xl px-4 pb-44 pt-5 sm:px-6 sm:pt-8 lg:px-10 lg:pb-12 lg:pt-10">
@@ -168,7 +169,7 @@ export default function ExpensesPage() {
                         <button
                             type="button"
                             onClick={handleAddExpense}
-                            className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom)+1.25rem)] right-5 z-40 inline-flex h-[52px] items-center gap-2 rounded-2xl bg-dark pl-4 pr-5 text-[15px] font-semibold text-text-on-dark shadow-float transition-[background-color,transform] duration-150 hover:bg-dark-surface active:scale-[0.98] lg:hidden"
+                            className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom)+1.25rem)] right-5 z-40 inline-flex h-[52px] items-center gap-2 rounded-2xl bg-dark pl-4 pr-5 text-[15px] font-semibold text-text-on-dark shadow-float transition-[background-color,transform,box-shadow] duration-150 hover:-translate-y-px hover:bg-dark-surface hover:shadow-float active:translate-y-0 active:scale-[0.98] lg:hidden"
                         >
                             <svg
                                 aria-hidden="true"

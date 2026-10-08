@@ -1,3 +1,4 @@
+import EmptyState from "@/components/ui/EmptyState";
 import { Expense } from "@/types/expense";
 import { formatAmount } from "@/utils/expenses";
 
@@ -141,9 +142,12 @@ export default function CategoryBreakdown({
             </div>
 
             {total === 0 ? (
-                <div className="mt-5 flex h-44 items-center justify-center rounded-xl border border-dashed border-border-strong px-6 text-center text-sm text-text-secondary">
-                    Add expenses this month to see your breakdown
-                </div>
+                <EmptyState
+                    icon="pie"
+                    title="No categories to show yet"
+                    description="Add an expense this month and you'll see where your money goes."
+                    className="mt-5 h-44 py-4"
+                />
             ) : (
                 <>
                     <CategoryBar

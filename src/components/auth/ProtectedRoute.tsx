@@ -26,7 +26,7 @@ export default function ProtectedRoute({
 
     if (isChecking) {
         return (
-            <main className="flex min-h-screen items-center justify-center bg-background">
+            <main className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-background lg:min-h-screen lg:pl-60">
                 <div
                     role="status"
                     className="flex flex-col items-center gap-3"

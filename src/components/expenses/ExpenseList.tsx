@@ -729,7 +729,7 @@ function ExpenseList({
             )}
 
             {/* Desktop: table card with toolbar */}
-            <div className="hidden overflow-hidden rounded-2xl border border-border bg-surface shadow-card md:block">
+            <div className="hidden rounded-2xl border border-border bg-surface shadow-card md:block">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-surface-muted px-4 py-3.5">
                     <div className="flex flex-wrap gap-1.5">
                         {chips("desktop")}
@@ -757,23 +757,23 @@ function ExpenseList({
                         />
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full min-w-[640px] border-collapse text-sm">
+                    <div>
+                        <table className="w-full border-collapse text-sm">
                             <thead>
                                 <tr className="text-left text-xs uppercase tracking-[0.04em] text-text-secondary">
-                                    <th scope="col" className="px-4 py-3 font-medium">
+                                    <th scope="col" className="sticky top-14 z-10 border-b border-surface-muted bg-surface/95 backdrop-blur px-4 py-3 font-medium lg:top-0">
                                         Expense
                                     </th>
-                                    <th scope="col" className="px-4 py-3 font-medium">
+                                    <th scope="col" className="sticky top-14 z-10 border-b border-surface-muted bg-surface/95 backdrop-blur px-4 py-3 font-medium lg:top-0">
                                         Category
                                     </th>
-                                    <th scope="col" className="px-4 py-3 font-medium">
+                                    <th scope="col" className="sticky top-14 z-10 border-b border-surface-muted bg-surface/95 backdrop-blur px-4 py-3 font-medium lg:top-0">
                                         Date
                                     </th>
-                                    <th scope="col" className="px-4 py-3 text-right font-medium">
+                                    <th scope="col" className="sticky top-14 z-10 border-b border-surface-muted bg-surface/95 backdrop-blur px-4 py-3 text-right font-medium lg:top-0">
                                         Amount
                                     </th>
-                                    <th scope="col" className="w-36 px-4 py-3">
+                                    <th scope="col" className="sticky top-14 z-10 border-b border-surface-muted bg-surface/95 backdrop-blur w-36 px-4 py-3 lg:top-0">
                                         <span className="sr-only">Actions</span>
                                     </th>
                                 </tr>
@@ -789,7 +789,7 @@ function ExpenseList({
                                     return (
                                         <tr
                                             key={expense.id}
-                                            className={`group border-t border-surface-muted transition-colors hover:bg-surface-muted/50 ${getRowAnimation(expense.id)}`}
+                                            className={`group border-t border-surface-muted transition-colors first:border-t-0 hover:bg-surface-muted/50 ${getRowAnimation(expense.id)}`}
                                         >
                                             <td className="px-4 py-3.5">
                                                 <div className="flex min-w-0 items-center gap-3">

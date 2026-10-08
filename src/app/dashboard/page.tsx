@@ -17,6 +17,7 @@ import Modal from "@/components/ui/Modal";
 import PageHeader from "@/components/ui/PageHeader";
 import StatLabel from "@/components/ui/StatLabel";
 
+import { useNewIds } from "@/hooks/useNewIds";
 import { useExpensesQuery } from "@/queries/expenses";
 import { Expense } from "@/types/expense";
 import {
@@ -80,6 +81,11 @@ export default function DashboardPage() {
     } = useExpensesQuery();
 
     const [isAddOpen, setIsAddOpen] = useState(false);
+
+    const newIds = useNewIds(
+        expenses.map((expense) => expense.id),
+        !isLoading && !error
+    );
 
     const username = useSyncExternalStore(
         subscribeToStorage,
@@ -414,7 +420,11 @@ export default function DashboardPage() {
                                     return (
                                         <li
                                             key={expense.id}
-                                            className="flex items-center gap-3 px-5 py-3.5 sm:px-6"
+                                            className={`flex items-center gap-3 px-5 py-3.5 sm:px-6 ${
+                                                newIds.includes(expense.id)
+                                                    ? "motion-safe:animate-row-new"
+                                                    : ""
+                                            }`}
                                         >
                                             <span
                                                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${styles.background} ${styles.color}`}

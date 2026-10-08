@@ -1,26 +1,32 @@
 @import "tailwindcss";
 
 :root {
-    --background: #f8f8f5;
-    --foreground: #171717;
+    --background: #f6f5ef;
+    --foreground: #1a1c17;
 
     --surface: #ffffff;
-    --surface-muted: #f1f1ed;
+    --surface-muted: #eeede5;
 
-    --border: #e5e5e0;
-    --border-strong: #d6d6cf;
+    --border: #e4e2d8;
+    --border-strong: #d3d1c5;
 
-    --text-primary: #171717;
-    --text-secondary: #737373;
-    --text-muted: #a3a3a3;
+    --text-primary: #1a1c17;
+    --text-secondary: #6b695f;
+    --text-muted: #a3a29a;
 
-    --accent: #e7f256;
-    --accent-hover: #d8e83f;
+    --accent: #dcf25a;
+    --accent-hover: #cde547;
 
-    --dark: #171717;
-    --dark-surface: #242424;
+    --dark: #1d2318;
+    --dark-surface: #2b3324;
 
-    --text-on-dark: #f8f8f5;
+    --text-on-dark: #f6f5ef;
+
+    /* Meaning colours for money: always paired with an arrow or label */
+    --positive: #276b31;
+    --positive-soft: #e3f2e1;
+    --negative: #b4372f;
+    --negative-soft: #fbe4e1;
 
     /* Category colours (validated set, assigned by category id in fixed order).
        base: bars and dots on light surfaces, soft: tiles and pills,
@@ -78,6 +84,11 @@
 
     --color-text-on-dark: var(--text-on-dark);
 
+    --color-positive: var(--positive);
+    --color-positive-soft: var(--positive-soft);
+    --color-negative: var(--negative);
+    --color-negative-soft: var(--negative-soft);
+
     --color-category-1: var(--category-1);
     --color-category-1-soft: var(--category-1-soft);
     --color-category-1-strong: var(--category-1-strong);
@@ -108,7 +119,7 @@
     --color-category-6-strong: var(--category-6-strong);
     --color-category-6-on-dark: var(--category-6-on-dark);
 
-    --shadow-float: 0 8px 24px rgba(23, 23, 23, 0.16);
+    --shadow-float: 0 8px 24px rgba(29, 35, 24, 0.16);
 
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);

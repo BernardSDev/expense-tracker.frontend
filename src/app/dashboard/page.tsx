@@ -213,8 +213,8 @@ export default function DashboardPage() {
                                                 <span
                                                     className={`mr-1 inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-semibold ${
                                                         monthChange > 0
-                                                            ? "bg-dark-surface text-text-on-dark"
-                                                            : "bg-accent text-text-primary"
+                                                            ? "bg-negative-soft text-negative"
+                                                            : "bg-positive-soft text-positive"
                                                     }`}
                                                 >
                                                     {monthChange > 0 ? "↑" : "↓"}{" "}

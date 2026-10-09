@@ -1,4 +1,5 @@
-import {apiRequest} from "./api";
+import { apiRequest } from "./api";
+import { CategoryInput } from "@/types/category";
 
 const CATEGORIES_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/Categories`;
 
@@ -6,9 +7,7 @@ export function getCategories() {
     return apiRequest(CATEGORIES_API_URL);
 }
 
-export function createCategory(data: {
-    name: string;
-}) {
+export function createCategory(data: CategoryInput) {
     return apiRequest(CATEGORIES_API_URL, {
         method: "POST",
         headers: {
@@ -18,12 +17,7 @@ export function createCategory(data: {
     });
 }
 
-export function updateCategory(
-    id: number,
-    data: {
-        name: string;
-    }
-) {
+export function updateCategory(id: number, data: CategoryInput) {
     return apiRequest(`${CATEGORIES_API_URL}/${id}`, {
         method: "PUT",
         headers: {

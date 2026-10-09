@@ -1,11 +1,9 @@
 import {useQuery} from "@tanstack/react-query";
 
 import {getCategories} from "@/lib/categories";
+import { Category } from "@/types/category";
 
-export type Category = {
-    id: number;
-    name: string;
-};
+export type { Category };
 
 export const categoriesQueryKey = ["categories"];
 

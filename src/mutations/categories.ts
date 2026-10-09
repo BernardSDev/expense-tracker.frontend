@@ -1,69 +1,79 @@
-import {
-    useMutation,
-    useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import {
-    createCategory,
-    updateCategory,
-    deleteCategory,
-} from "@/lib/categories";
+import { createCategory, deleteCategory, updateCategory } from "@/lib/categories";
+import { categoriesQueryKey } from "@/queries/categories";
+import { expensesQueryKey } from "@/queries/expenses";
+import { CategoryInput } from "@/types/category";
 
-import {categoriesQueryKey} from "@/queries/categories";
-
-type CategoryData = {
-    name: string;
+type UpdateCategoryVariables = {
+    id: number;
+    data: CategoryInput;
 };
 
-export function useCreateCategoryMutation() {
+async function getErrorMessage(response: Response, fallback: string) {
+    const body = await response.json().catch(() => null);
+
+    return body?.details || body?.message || fallback;
+}
+
+async function addCategory(data: CategoryInput) {
+    const response = await createCategory(data);
+
+    if (!response.ok) {
+        throw new Error(await getErrorMessage(response, "Failed to create category."));
+    }
+
+    return response;
+}
+
+async function editCategory({ id, data }: UpdateCategoryVariables) {
+    const response = await updateCategory(id, data);
+
+    if (!response.ok) {
+        throw new Error(await getErrorMessage(response, "Failed to update category."));
+    }
+
+    return response;
+}
+
+async function removeCategory(id: number) {
+    const response = await deleteCategory(id);
+
+    if (!response.ok) {
+        throw new Error(await getErrorMessage(response, "Failed to delete category."));
+    }
+
+    return response;
+}
+
+function useCategoryMutation<TVariables>(
+    mutationFn: (variables: TVariables) => Promise<Response>
+) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: CategoryData) => createCategory(data),
+        mutationFn,
 
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: categoriesQueryKey,
             });
+
+            queryClient.invalidateQueries({
+                queryKey: expensesQueryKey,
+            });
         },
     });
+}
+
+export function useCreateCategoryMutation() {
+    return useCategoryMutation(addCategory);
 }
 
 export function useUpdateCategoryMutation() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({
-                         id,
-                         data,
-                     }: {
-            id: number;
-            data: CategoryData;
-        }) => updateCategory(id, data),
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: categoriesQueryKey,
-            });
-        },
-    });
+    return useCategoryMutation(editCategory);
 }
 
 export function useDeleteCategoryMutation() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (id: number) =>
-            deleteCategory(id),
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: categoriesQueryKey,
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: ["expenses"],
-            });
-        },
-    });
+    return useCategoryMutation(removeCategory);
 }

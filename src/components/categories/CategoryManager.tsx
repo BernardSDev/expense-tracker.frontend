@@ -16,14 +16,10 @@ import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import Input from "@/components/ui/Input";
 import { getCategoryStyles } from "@/components/expenses/categoryStyles";
+import { Category } from "@/types/category";
 
 type CategoryManagerProps = {
     onClose?: () => void;
-};
-
-type Category = {
-    id: number;
-    name: string;
 };
 
 export default function CategoryManager({
@@ -89,46 +85,16 @@ export default function CategoryManager({
 
         try {
             if (editingCategoryId !== null) {
-                const response =
-                    await updateCategoryMutation.mutateAsync(
-                        {
-                            id: editingCategoryId,
-                            data: {
-                                name: trimmedName,
-                            },
-                        }
-                    );
-
-                if (!response.ok) {
-                    const data = await response
-                        .json()
-                        .catch(() => null);
-
-                    throw new Error(
-                        data?.details ||
-                        data?.message ||
-                        "Failed to update category."
-                    );
-                }
+                await updateCategoryMutation.mutateAsync({
+                    id: editingCategoryId,
+                    data: {
+                        name: trimmedName,
+                    },
+                });
             } else {
-                const response =
-                    await createCategoryMutation.mutateAsync(
-                        {
-                            name: trimmedName,
-                        }
-                    );
-
-                if (!response.ok) {
-                    const data = await response
-                        .json()
-                        .catch(() => null);
-
-                    throw new Error(
-                        data?.details ||
-                        data?.message ||
-                        "Failed to create category."
-                    );
-                }
+                await createCategoryMutation.mutateAsync({
+                    name: trimmedName,
+                });
             }
 
             resetForm();
@@ -157,22 +123,7 @@ export default function CategoryManager({
         setDeletingCategoryId(categoryId);
 
         try {
-            const response =
-                await deleteCategoryMutation.mutateAsync(
-                    categoryId
-                );
-
-            if (!response.ok) {
-                const data = await response
-                    .json()
-                    .catch(() => null);
-
-                throw new Error(
-                    data?.details ||
-                    data?.message ||
-                    "Failed to delete category."
-                );
-            }
+            await deleteCategoryMutation.mutateAsync(categoryId);
 
             if (editingCategoryId === categoryId) {
                 resetForm();

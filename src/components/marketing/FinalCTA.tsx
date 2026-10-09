@@ -1,39 +1,40 @@
+import Link from "next/link";
+
 export default function FinalCTA() {
     return (
-        <section className="bg-dark text-text-on-dark">
-            <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
-                <div className="flex flex-col gap-10 border-t border-white/15 pt-10 md:flex-row md:items-end md:justify-between">
-                    <div className="max-w-3xl">
-                        <p className="text-sm font-medium uppercase tracking-[0.2em] text-text-on-dark/60">
-                            Take control
-                        </p>
+        <section className="bg-background px-6 pb-20 lg:px-8 lg:pb-28">
+            <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl bg-dark px-6 py-16 text-center text-text-on-dark sm:px-12 sm:py-20">
+                <div
+                    aria-hidden="true"
+                    className="absolute -top-40 left-1/2 h-80 w-[36rem] -translate-x-1/2 rounded-full bg-accent/20 blur-3xl"
+                />
 
-                        <h2 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-5xl lg:text-6xl">
-                            Start understanding
-                            <br />
-                            <span className="text-accent">your money.</span>
-                        </h2>
+                <div className="relative mx-auto max-w-2xl">
+                    <h2 className="text-3xl font-semibold tracking-[-0.03em] sm:text-5xl sm:leading-[1.05]">
+                        Start knowing where
+                        <br className="hidden sm:block" />{" "}
+                        <span className="text-accent">every cedi goes.</span>
+                    </h2>
 
-                        <p className="mt-6 max-w-xl text-base leading-7 text-text-on-dark/70 sm:text-lg">
-                            A simpler way to track every expense and stay in control.
-                        </p>
-                    </div>
+                    <p className="mx-auto mt-5 max-w-lg text-base leading-7 text-text-on-dark/70 sm:text-lg">
+                        Create your account and add your first expense in under a minute.
+                    </p>
 
-                    <div className="flex flex-wrap items-center gap-6">
-                        <a
+                    <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                        <Link
                             href="/register"
-                            className="inline-flex h-12 items-center gap-2 rounded-[10px] bg-accent px-6 text-[15px] font-semibold text-text-primary transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+                            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-accent px-6 text-[15px] font-semibold text-text-primary transition-[background-color,transform] duration-150 hover:-translate-y-px hover:bg-accent-hover active:translate-y-0 active:scale-[0.98] sm:w-auto"
                         >
-                            Start tracking
+                            Create your account
                             <span aria-hidden="true">→</span>
-                        </a>
+                        </Link>
 
-                        <a
+                        <Link
                             href="/login"
-                            className="text-sm font-medium text-text-on-dark/70 transition-colors hover:text-text-on-dark"
+                            className="inline-flex h-12 w-full items-center justify-center rounded-[10px] border border-text-on-dark/15 px-6 text-[15px] font-semibold text-text-on-dark transition-colors hover:bg-dark-surface sm:w-auto"
                         >
                             Sign in
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

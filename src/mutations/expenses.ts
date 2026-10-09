@@ -43,11 +43,13 @@ async function removeExpense({ id }: DeleteExpenseVariables) {
     return response;
 }
 
-export function useCreateExpenseMutation() {
+function useExpenseMutation<TVariables>(
+    mutationFn: (variables: TVariables) => Promise<Response>
+) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: addExpense,
+        mutationFn,
 
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -55,32 +57,17 @@ export function useCreateExpenseMutation() {
             });
         },
     });
+}
+
+export function useCreateExpenseMutation() {
+    return useExpenseMutation(addExpense);
 }
 
 export function useUpdateExpenseMutation() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: editExpense,
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: expensesQueryKey,
-            });
-        },
-    });
+    return useExpenseMutation(editExpense);
 }
 
 export function useDeleteExpenseMutation() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: removeExpense,
-
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: expensesQueryKey,
-            });
-        },
-    });
+    return useExpenseMutation(removeExpense);
 }
+

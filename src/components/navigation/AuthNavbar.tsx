@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
+import { clearSession, getUsername } from "@/lib/session";
+
 function HomeIcon({ active }: { active: boolean }) {
     return (
         <svg
@@ -113,7 +115,7 @@ export default function AuthNavbar() {
 
     const username = useSyncExternalStore(
         subscribeToStorage,
-        () => localStorage.getItem("username") ?? "",
+        getUsername,
         () => ""
     );
     const [accountOpen, setAccountOpen] = useState(false);
@@ -150,9 +152,7 @@ export default function AuthNavbar() {
     }, []);
 
     function handleSignOut() {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("username");
+        clearSession();
 
         router.push("/login");
     }

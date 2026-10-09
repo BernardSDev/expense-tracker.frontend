@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useState } from "react";
 
+import { saveSession } from "@/lib/session";
+
 const INPUT_CLASS =
     "h-12 w-full rounded-[10px] border border-border bg-surface px-3.5 text-[15px] text-text-primary outline-none transition-[border-color,box-shadow] placeholder:text-text-secondary hover:border-border-strong focus:border-dark focus:ring-4 focus:ring-accent/40";
 
@@ -63,9 +65,7 @@ function LoginPageContent() {
                 return;
             }
 
-            localStorage.setItem("accessToken", data.accessToken);
-            localStorage.setItem("refreshToken", data.refreshToken);
-            localStorage.setItem("username", username);
+            saveSession(data, username);
 
             router.push("/dashboard");
         } catch {

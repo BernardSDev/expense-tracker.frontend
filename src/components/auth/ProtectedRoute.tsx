@@ -3,6 +3,8 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 
+import { getAccessToken } from "@/lib/session";
+
 type ProtectedRouteProps = {
     children: React.ReactNode;
 };
@@ -14,7 +16,7 @@ function subscribeToStorage(callback: () => void) {
 }
 
 function getHasToken() {
-    return Boolean(localStorage.getItem("accessToken"));
+    return Boolean(getAccessToken());
 }
 
 // On the server we can't see localStorage, so we don't know yet.

@@ -18,6 +18,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import StatLabel from "@/components/ui/StatLabel";
 
 import { useNewIds } from "@/hooks/useNewIds";
+import { getUsername } from "@/lib/session";
 import { useExpensesQuery } from "@/queries/expenses";
 import { Expense } from "@/types/expense";
 import {
@@ -89,7 +90,7 @@ export default function DashboardPage() {
 
     const username = useSyncExternalStore(
         subscribeToStorage,
-        () => localStorage.getItem("username") ?? "",
+        getUsername,
         () => ""
     );
 

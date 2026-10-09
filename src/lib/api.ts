@@ -1,11 +1,5 @@
-const ACCESS_TOKEN_KEY = "accessToken";
-const REFRESH_TOKEN_KEY = "refreshToken";
-const USERNAME_KEY = "username";
-
-type AuthTokens = {
-    accessToken: string;
-    refreshToken: string;
-};
+import {refreshAccessToken} from "./auth";
+import {AuthTokens, clearSession, getAccessToken} from "./session";
 
 let refreshPromise: Promise<AuthTokens> | null = null;
 
@@ -16,43 +10,42 @@ export class SessionExpiredError extends Error {
     }
 }
 
-function clearSession() {
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-    localStorage.removeItem(USERNAME_KEY);
-
-    window.dispatchEvent(new Event("storage"));
-}
-
-function withAuth(
-    options: RequestInit,
-    accessToken: string | null
-): RequestInit {
-    const headers = new Headers(options.headers);
-
-    if (accessToken) {
-        headers.set("Authorization", `Bearer ${accessToken}`);
-    }
-
-    return { ...options, headers };
-}
-
 export async function apiRequest(
     url: string,
     options: RequestInit = {}
 ) {
-    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+    const token = getAccessToken();
 
-    const response = await fetch(url, withAuth(options, accessToken));
+    const response = await send(url, options, token);
 
     if (response.status !== 401) {
         return response;
     }
 
-    const latestAccessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+    const freshToken = await getFreshToken(token);
 
-    if (latestAccessToken && latestAccessToken !== accessToken) {
-        return fetch(url, withAuth(options, latestAccessToken));
+    return send(url, options, freshToken);
+}
+
+function send(
+    url: string,
+    options: RequestInit,
+    token: string | null
+) {
+    const headers = new Headers(options.headers);
+
+    if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    return fetch(url, { ...options, headers });
+}
+
+async function getFreshToken(oldToken: string | null) {
+    const latestToken = getAccessToken();
+
+    if (latestToken && latestToken !== oldToken) {
+        return latestToken;
     }
 
     if (!refreshPromise) {
@@ -61,51 +54,11 @@ export async function apiRequest(
         });
     }
 
-    let tokens: AuthTokens;
-
     try {
-        tokens = await refreshPromise;
+        const tokens = await refreshPromise;
+        return tokens.accessToken;
     } catch {
         clearSession();
         throw new SessionExpiredError();
     }
-
-    return fetch(url, withAuth(options, tokens.accessToken));
-}
-
-export async function refreshAccessToken(): Promise<AuthTokens> {
-    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-
-    if (!refreshToken) {
-        throw new Error("No refresh token available.");
-    }
-
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/Auth/refresh`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ refreshToken }),
-        }
-    );
-
-    if (!response.ok) {
-        throw new Error("Failed to refresh access token.");
-    }
-
-    const data: Partial<AuthTokens> = await response.json();
-
-    if (!data.accessToken || !data.refreshToken) {
-        throw new Error("Refresh response did not include new tokens.");
-    }
-
-    localStorage.setItem(ACCESS_TOKEN_KEY, data.accessToken);
-    localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
-
-    return {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-    };
 }

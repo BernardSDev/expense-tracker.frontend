@@ -9,9 +9,7 @@ import {
     deleteCategory,
 } from "@/lib/categories";
 
-import {
-    categoriesQueryKey,
-} from "@/queries/categories";
+import {categoriesQueryKey} from "@/queries/categories";
 
 type CategoryData = {
     name: string;
@@ -21,8 +19,7 @@ export function useCreateCategoryMutation() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: CategoryData) =>
-            createCategory(data),
+        mutationFn: (data: CategoryData) => createCategory(data),
 
         onSuccess: () => {
             queryClient.invalidateQueries({

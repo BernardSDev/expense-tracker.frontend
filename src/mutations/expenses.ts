@@ -2,24 +2,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { createExpense, deleteExpense, updateExpense } from "@/lib/expenses";
 import { expensesQueryKey } from "@/queries/expenses";
-
-type ExpenseData = {
-    amount: number;
-    description: string;
-    date: string;
-    categoryId?: number;
-};
+import { ExpenseInput } from "@/types/expense";
 
 type UpdateExpenseVariables = {
     id: number;
-    data: ExpenseData;
+    data: ExpenseInput;
 };
 
 type DeleteExpenseVariables = {
     id: number;
 };
 
-async function addExpense(data: ExpenseData) {
+async function addExpense(data: ExpenseInput) {
     const response = await createExpense(data);
 
     if (!response.ok) {

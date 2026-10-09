@@ -7,3 +7,10 @@ export type Expense = {
     categoryId: number | null;
     categoryName: string | null;
 };
+
+export type ExpenseInput = {
+    amount: number;
+    description: string;
+    date: string;
+    categoryId?: number;
+};

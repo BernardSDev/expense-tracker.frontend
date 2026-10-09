@@ -28,7 +28,6 @@ export async function apiRequest(
     });
 
     if (response.status === 401) {
-        console.log("Access token expired.");
 
         if (!refreshPromise) {
             refreshPromise = refreshAccessToken();

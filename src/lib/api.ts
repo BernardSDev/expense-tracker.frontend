@@ -7,10 +7,6 @@ type AuthTokens = {
     refreshToken: string;
 };
 
-/**
- * Shared by every request that hits a 401 at the same time, so the
- * refresh endpoint is only called once.
- */
 let refreshPromise: Promise<AuthTokens> | null = null;
 
 export class SessionExpiredError extends Error {
@@ -20,10 +16,6 @@ export class SessionExpiredError extends Error {
     }
 }
 
-/**
- * Signs the user out locally. The "storage" event lets ProtectedRoute
- * notice straight away and send the user to the login page.
- */
 function clearSession() {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
@@ -32,7 +24,6 @@ function clearSession() {
     window.dispatchEvent(new Event("storage"));
 }
 
-/** Copies the request options and attaches the given access token, if any. */
 function withAuth(
     options: RequestInit,
     accessToken: string | null
@@ -58,8 +49,6 @@ export async function apiRequest(
         return response;
     }
 
-    // Another request may already have refreshed the token while this one
-    // was in flight. If so, just retry with the new token.
     const latestAccessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
 
     if (latestAccessToken && latestAccessToken !== accessToken) {
@@ -81,8 +70,6 @@ export async function apiRequest(
         throw new SessionExpiredError();
     }
 
-    // Retry once with the fresh token. If this also returns 401,
-    // it's passed back to the caller rather than looping.
     return fetch(url, withAuth(options, tokens.accessToken));
 }
 

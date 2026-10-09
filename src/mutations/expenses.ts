@@ -2,6 +2,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {createExpense, updateExpense, deleteExpense} from "@/lib/expenses";
 import { expensesQueryKey } from "@/queries/expenses";
 
+// fetch only rejects on network failure, so turn 4xx/5xx into an error
+// that React Query treats as a failed mutation (onError, not onSuccess).
+async function ensureOk(response: Response, fallback: string) {
+    if (!response.ok) {
+        throw new Error(fallback);
+    }
+
+    return response;
+}
+
 type CreateExpenseData = {
     amount: number;
     description: string;
@@ -13,8 +23,11 @@ export function useCreateExpenseMutation() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: CreateExpenseData) =>
-            createExpense(data),
+        mutationFn: async (data: CreateExpenseData) =>
+            ensureOk(
+                await createExpense(data),
+                "Failed to add expense."
+            ),
 
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -35,13 +48,17 @@ export function useUpdateExpenseMutation() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({
+        mutationFn: async ({
                          id,
                          data,
                      }: {
             id: number;
             data: UpdateExpenseData;
-        }) => updateExpense(id, data),
+        }) =>
+            ensureOk(
+                await updateExpense(id, data),
+                "Failed to update expense."
+            ),
 
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -59,8 +76,11 @@ export function useDeleteExpenseMutation() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ id }: DeleteExpenseVariables) =>
-            deleteExpense(id),
+        mutationFn: async ({ id }: DeleteExpenseVariables) =>
+            ensureOk(
+                await deleteExpense(id),
+                "Failed to delete expense."
+            ),
 
         onSuccess: () => {
             queryClient.invalidateQueries({

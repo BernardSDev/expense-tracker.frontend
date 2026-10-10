@@ -14,3 +14,8 @@ export type ExpenseInput = {
     date: string;
     categoryId?: number;
 };
+
+export type DateRange = {
+    from: Date;
+    to: Date;
+};

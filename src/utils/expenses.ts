@@ -1,4 +1,4 @@
-import {Expense} from "@/types/expense";
+import { DateRange, Expense } from "@/types/expense";
 
 export function getCurrentDate() {
     const now = new Date();
@@ -10,6 +10,17 @@ export function getCurrentTime() {
     const now = new Date();
 
     return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+}
+
+export function getMonthRange(month: Date): DateRange {
+    return {
+        from: new Date(month.getFullYear(), month.getMonth(), 1),
+        to: new Date(month.getFullYear(), month.getMonth() + 1, 1),
+    };
+}
+
+export function toMonthKey(month: Date) {
+    return `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`;
 }
 
 export function formatAmount(amount: number) {

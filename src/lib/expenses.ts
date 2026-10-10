@@ -1,10 +1,19 @@
 import { apiRequest } from "./api";
-import { ExpenseInput } from "@/types/expense";
+import { DateRange, ExpenseInput } from "@/types/expense";
 
 const EXPENSES_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/Expenses`;
 
-export function getExpenses() {
-    return apiRequest(EXPENSES_API_URL);
+export function getExpenses(range?: DateRange) {
+    if (!range) {
+        return apiRequest(EXPENSES_API_URL);
+    }
+
+    const params = new URLSearchParams({
+        from: range.from.toISOString(),
+        to: range.to.toISOString(),
+    });
+
+    return apiRequest(`${EXPENSES_API_URL}?${params}`);
 }
 
 export function createExpense(data: ExpenseInput) {

@@ -115,8 +115,7 @@ function ExpenseSummary({
                 <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 flex-col gap-1.5 sm:gap-2">
                         <StatLabel icon="wallet" tone="dark">
-                            <span className="sm:hidden">Spent this month</span>
-                            <span className="hidden sm:inline">Total spent</span>
+                            Total spent
                         </StatLabel>
 
                         <p className="tabular text-[32px] font-semibold leading-tight tracking-[-0.03em] sm:text-[28px]">

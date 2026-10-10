@@ -17,8 +17,12 @@ import SwipeRow from "@/components/ui/SwipeRow";
 type ExpenseListProps = {
     expenses: Expense[];
     isLoading: boolean;
+    isPlaceholderData?: boolean;
+    periodKey?: string;
     error: Error | null;
     onRetry: () => void;
+    emptyTitle?: string;
+    emptyDescription?: string;
     onAddExpense?: () => void;
     onEdit: (expense: Expense) => void;
     onDelete: (expense: Expense) => void;
@@ -163,8 +167,12 @@ function SearchIcon() {
 function ExpenseList({
                          expenses,
                          isLoading,
+                         isPlaceholderData = false,
+                         periodKey = "",
                          error,
                          onRetry,
+                         emptyTitle = "No expenses yet",
+                         emptyDescription = "Your first one is a tap away. Add it and it'll show up here.",
                          onAddExpense,
                          onEdit,
                          onDelete,
@@ -180,8 +188,17 @@ function ExpenseList({
     const [seenIds, setSeenIds] = useState<Set<number> | null>(null);
     const [newIds, setNewIds] = useState<number[]>([]);
     const [leaving, setLeaving] = useState<LeavingExpense[]>([]);
+    const [seenPeriodKey, setSeenPeriodKey] = useState(periodKey);
 
-    if (seenIds === null) {
+    if (periodKey !== seenPeriodKey) {
+        if (!isLoading && !isPlaceholderData && !error) {
+            setSeenPeriodKey(periodKey);
+            setSeenIds(new Set(expenses.map((expense) => expense.id)));
+            setPreviousExpenses(expenses);
+            setNewIds([]);
+            setLeaving([]);
+        }
+    } else if (seenIds === null) {
         if (!isLoading && !error) {
             setSeenIds(new Set(expenses.map((expense) => expense.id)));
             setPreviousExpenses(expenses);
@@ -411,8 +428,8 @@ function ExpenseList({
             <section className="rounded-2xl border border-border bg-surface p-4 shadow-card sm:p-6">
                 <EmptyState
                     icon="receipt"
-                    title="No expenses yet"
-                    description="Your first one is a tap away. Add it and it'll show up here."
+                    title={emptyTitle}
+                    description={emptyDescription}
                     className="py-10"
                     action={
                         onAddExpense && (

@@ -11,6 +11,7 @@ import { Expense } from "@/types/expense";
 import { useDeleteExpenseMutation } from "@/mutations/expenses";
 
 import { useExpensesQuery } from "@/queries/expenses";
+import { isSameMonth, startOfMonth, toMonthKey } from "@/utils/expenses";
 
 import AddExpenseForm from "@/components/expenses/AddExpenseForm";
 import EditExpenseForm from "@/components/expenses/EditExpenseForm";
@@ -22,12 +23,23 @@ import Button from "@/components/ui/Button";
 import { toast } from "sonner";
 
 export default function ExpensesPage() {
+    const [month, setMonth] = useState(() =>
+        startOfMonth(new Date())
+    );
+
     const {
         data: expenses = [],
         isLoading,
+        isPlaceholderData,
         error,
         refetch,
-    } = useExpensesQuery();
+    } = useExpensesQuery(month);
+
+    const isCurrentMonth = isSameMonth(month, new Date());
+
+    const monthName = month.toLocaleDateString("en-GB", {
+        month: "long",
+    });
 
     const [isAddOpen, setIsAddOpen] =
         useState(false);
@@ -102,6 +114,8 @@ export default function ExpensesPage() {
                     <div className="mx-auto max-w-7xl px-4 pb-44 pt-5 sm:px-6 sm:pt-8 lg:px-10 lg:pb-12 lg:pt-10">
                         <div className="stagger">
                             <ExpenseHeader
+                                month={month}
+                                onMonthChange={setMonth}
                                 onAddExpense={
                                     handleAddExpense
                                 }
@@ -110,22 +124,41 @@ export default function ExpensesPage() {
                                 }
                             />
 
-                            <ExpenseSummary
-                                expenses={expenses}
-                                isLoading={isLoading}
-                            />
+                            <div
+                                aria-busy={isPlaceholderData}
+                                className={`transition-opacity duration-200 ${
+                                    isPlaceholderData ? "opacity-60" : ""
+                                }`}
+                            >
+                                <ExpenseSummary
+                                    expenses={expenses}
+                                    isLoading={isLoading}
+                                />
 
-                            <ExpenseList
-                                expenses={expenses}
-                                isLoading={isLoading}
-                                error={error}
-                                onRetry={refetch}
-                                onAddExpense={
-                                    handleAddExpense
-                                }
-                                onEdit={handleEdit}
-                                onDelete={handleDelete}
-                            />
+                                <ExpenseList
+                                    expenses={expenses}
+                                    isLoading={isLoading}
+                                    isPlaceholderData={isPlaceholderData}
+                                    periodKey={toMonthKey(month)}
+                                    error={error}
+                                    onRetry={refetch}
+                                    emptyTitle={
+                                        isCurrentMonth
+                                            ? undefined
+                                            : `No expenses in ${monthName}`
+                                    }
+                                    emptyDescription={
+                                        isCurrentMonth
+                                            ? undefined
+                                            : "Nothing was recorded this month."
+                                    }
+                                    onAddExpense={
+                                        handleAddExpense
+                                    }
+                                    onEdit={handleEdit}
+                                    onDelete={handleDelete}
+                                />
+                            </div>
                         </div>
 
                         {/* Add expense */}

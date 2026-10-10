@@ -12,6 +12,18 @@ export function getCurrentTime() {
     return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 }
 
+export function startOfMonth(date: Date) {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+export function addMonths(date: Date, amount: number) {
+    return new Date(date.getFullYear(), date.getMonth() + amount, 1);
+}
+
+export function isSameMonth(a: Date, b: Date) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
+}
+
 export function getMonthRange(month: Date): DateRange {
     return {
         from: new Date(month.getFullYear(), month.getMonth(), 1),

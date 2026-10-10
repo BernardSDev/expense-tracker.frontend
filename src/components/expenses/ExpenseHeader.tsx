@@ -1,25 +1,27 @@
+import MonthPicker from "@/components/ui/MonthPicker";
 import PageHeader from "@/components/ui/PageHeader";
 
 type ExpenseHeaderProps = {
+    month: Date;
+    onMonthChange: (month: Date) => void;
     onAddExpense?: () => void;
     onManageCategories?: () => void;
 };
 
 function ExpenseHeader({
+                           month,
+                           onMonthChange,
                            onAddExpense,
                            onManageCategories,
                        }: ExpenseHeaderProps) {
-    const monthLabel = new Date().toLocaleDateString(
-        "en-GB",
-        {
-            month: "long",
-            year: "numeric",
-        }
-    );
-
     return (
         <PageHeader
-            eyebrow={monthLabel}
+            eyebrow={
+                <MonthPicker
+                    month={month}
+                    onChange={onMonthChange}
+                />
+            }
             title="Expenses"
             description="Every expense you've recorded, grouped and searchable."
             actions={

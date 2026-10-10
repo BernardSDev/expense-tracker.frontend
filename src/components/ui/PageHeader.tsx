@@ -17,9 +17,9 @@ export default function PageHeader({
         <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mb-8">
             <div className="min-w-0">
                 {eyebrow && (
-                    <p className="text-[13px] font-medium text-text-secondary">
+                    <div className="text-[13px] font-medium text-text-secondary">
                         {eyebrow}
-                    </p>
+                    </div>
                 )}
 
                 <h1 className="mt-1 text-[26px] font-semibold leading-tight tracking-[-0.025em] text-text-primary sm:text-[30px]">
